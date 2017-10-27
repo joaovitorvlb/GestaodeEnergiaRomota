@@ -41,6 +41,18 @@ def rele(valor):
         return ('valor desconhecido', 200)
     return ('OK', 200)
 
+@app.route('/led/<valor>')
+def led(valor):
+    #valor = int(valor)
+    print valor
+    if valor == '1':
+        sensores.liga_led()
+    elif valor == '0':
+        sensores.desliga_led()
+    else:
+        return ('valor desconhecido', 200)
+    return ('OK', 200)
+
 @app.route('/lcd/<texto>')
 def lcd(texto):
     texto_linha1, texto_linha2 = texto.split(',')
