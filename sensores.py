@@ -13,7 +13,7 @@ pinos = GPIO(debug=False)
 pinos.pinMode(pino_rele, pinos.OUTPUT)
 pinos.pinMode(pino_pot, pinos.ANALOG_INPUT)
 pinos.pinMode(pino_servo, pinos.OUTPUT)
-temperatura = upm.Temperature(pino_sensor_temperatura)
+temp = upm.Temperature(pino_sensor_temperatura)
 sg_servo = servo.ES08A(pino_servo)
 tela = lcd.Jhd1313m1(0, 0x3E, 0x62)
 
