@@ -59,11 +59,18 @@ def lcd(texto):
     sensores.escreve_lcd(texto_linha1, texto_linha2)
     return ('OK', 200)
 
-@app.route('/servo/<valor>')
-def servo(valor):
+@app.route('/servo1/<valor>')
+def servo1(valor):
     valor = int(valor)
-    sensores.move_servo(valor)
+    sensores.move_servo1(valor)
     return ('OK', 200)
+
+@app.route('/servo2/<valor>')
+def servo2(valor):
+    valor = int(valor)
+    sensores.move_servo2(valor)
+    return ('OK', 200)
+
 
 @app.route('/update_temperatura')
 def temperatura():
