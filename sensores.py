@@ -8,8 +8,8 @@ pino_sensor_temperatura = 0
 pino_rele  = 8
 pino_led   = 13
 pino_pot   = 15
-pino_servo1 = 3
-pino_servo2 = 4
+pino_servo1 = 5
+pino_servo2 = 6
 
 pinos = GPIO(debug=False)
 
