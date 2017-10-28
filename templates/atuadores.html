@@ -52,15 +52,29 @@
       Controle do servo
     </div>
     <div class="panel-body">
-        <label for="basic-url">Digite o valor para o servo (0 a 180)</label>
-        <div class="input-group">
-            <span class="input-group-btn">
-                <button class="btn btn-success" type="button" id="bt_servo_update">
-                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
-                    update
-                </button>
-            </span>
-            <input type="text" class="form-control" placeholder="valor em graus" id="input_servo">
+        <div class="col-md-6">
+            <label for="basic-url">Digite o valor para o servo 1 de (0 a 180)</label>
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <button class="btn btn-success" type="button" id="bt_servo1_update">
+                        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                        update
+                    </button>
+                </span>
+                <input type="text" class="form-control" placeholder="valor em graus" id="input_servo1">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <label for="basic-url">Digite o valor para o servo 2 de (0 a 180)</label>
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <button class="btn btn-success" type="button" id="bt_servo2_update">
+                        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                        update
+                    </button>
+                </span>
+                <input type="text" class="form-control" placeholder="valor em graus" id="input_servo2">
+            </div>
         </div>
     </div>
 </div>
@@ -86,10 +100,19 @@
 </div>
 
 <script>
-    $("#bt_servo_update").click(function()
+    $("#bt_servo1_update").click(function()
     {
-        var valor = $("#input_servo").val();
-        $.get( "/servo/" + valor, function( data ) 
+        var valor = $("#input_servo1").val();
+        $.get( "/servo1/" + valor, function( data ) 
+        {
+            valor;
+            console.log( "Load was performed." );
+        });
+    })
+    $("#bt_servo2_update").click(function()
+    {
+        var valor = $("#input_servo2").val();
+        $.get( "/servo2/" + valor, function( data ) 
         {
             valor;
             console.log( "Load was performed." );
