@@ -5,10 +5,11 @@ from wiringx86 import GPIOGalileoGen2 as GPIO
 from upm import pyupm_jhd1313m1 as lcd
 
 pino_sensor_temperatura = 0
-pino_rele  = 3
+pino_rele  = 8
 pino_led   = 13
 pino_pot   = 15
-pino_servo = 5
+pino_servo1 = 3
+pino_servo2 = 4
 
 pinos = GPIO(debug=False)
 
@@ -16,9 +17,11 @@ pinos = GPIO(debug=False)
 pinos.pinMode(pino_rele, pinos.OUTPUT)
 pinos.pinMode(pino_led, pinos.OUTPUT)
 pinos.pinMode(pino_pot, pinos.ANALOG_INPUT)
-pinos.pinMode(pino_servo, pinos.OUTPUT)
+pinos.pinMode(pino_servo1, pinos.OUTPUT)
+pinos.pinMode(pino_servo2, pinos.OUTPUT)
 temp = upm.Temperature(pino_sensor_temperatura)
-sg_servo = servo.ES08A(pino_servo)
+sg_servo1 = servo.ES08A(pino_servo1)
+sg_servo2 = servo.ES08A(pino_servo2)
 tela = lcd.Jhd1313m1(0, 0x3E, 0x62)
 
 tela.setColor(0, 100, 50)
@@ -43,8 +46,11 @@ def liga_led():
 def desliga_led():
     pinos.digitalWrite(pino_led,pinos.LOW)
 
-def move_servo(posicao):
-    sg_servo.setAngle(posicao)
+def move_servo1(posicao):
+    sg_servo1.setAngle(posicao)
+
+def move_servo2(posicao):
+    sg_servo2.setAngle(posicao)
 
 def escreve_lcd(texto_linha1, texto_linha2):
     tela.clear()
