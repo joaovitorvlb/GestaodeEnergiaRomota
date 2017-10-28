@@ -41,14 +41,26 @@ def rele(valor):
         return ('valor desconhecido', 200)
     return ('OK', 200)
 
-@app.route('/led/<valor>')
-def led(valor):
+@app.route('/led1/<valor>')
+def led1(valor):
     #valor = int(valor)
     print valor
     if valor == '1':
-        sensores.liga_led()
+        sensores.liga_led1()
     elif valor == '0':
-        sensores.desliga_led()
+        sensores.desliga_led1()
+    else:
+        return ('valor desconhecido', 200)
+    return ('OK', 200)
+
+@app.route('/led2/<valor>')
+def led2(valor):
+    #valor = int(valor)
+    print valor
+    if valor == '1':
+        sensores.liga_led2()
+    elif valor == '0':
+        sensores.desliga_led2()
     else:
         return ('valor desconhecido', 200)
     return ('OK', 200)
