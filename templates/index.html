@@ -11,6 +11,18 @@
     <link href="{{url_for('static',filename='vendor/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet" type="text/css">
     <link href="{{url_for('static',filename='vendor/datatables/dataTables-bootstrap4.css')}}" >
     <link href="{{url_for('static',filename='css/sb-admin.css')}}" rel="stylesheet">
+
+    <script type="text/javascript" 
+            src="{{ url_for('static', filename='highcharts/exporting.js') }}">
+    </script>
+
+    <script type="text/javascript" 
+            src="{{ url_for('static', filename='highcharts/highcharts.js') }}">
+    </script>
+
+    <script type="text/javascript" 
+            src="{{ url_for('static', filename='highcharts/highcharts-more.js') }}">
+    </script>
     
     </head>
 
@@ -166,14 +178,16 @@
         <div class="col-xl-3 col-sm-6 mb-3">
           <div class="card text-white bg-warning o-hidden h-100">
             <a class="card-footer text-white clearfix small z-1">
-              <span class="float-left">Memoria RAM</span>
-            </a>
+              <span class="float-left">Memoria RAM</span><hr>
+              <span class="float-left" id="p_mem"></span>
+            </a>  
           </div>
         </div>
         <div class="col-xl-3 col-sm-6 mb-3">
           <div class="card text-white bg-success o-hidden h-100">
             <a class="card-footer text-white clearfix small z-1">
-              <span class="float-left">Disco</span>
+              <span class="float-left">Disco</span><hr>
+              <span class="float-left" id="p_disc"></span>
             </a>
           </div>
         </div>
@@ -183,6 +197,13 @@
               <span class="float-left">Numero de Clientes no Flask</span>
             </a>
           </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-area-chart"></i> Intensidade de Energia Captada Durante o Dia</div>
+        <div class="card-body">
+          <div id="container-grafico-dinamico" width="100%" height="30"></div>
         </div>
       </div>
       <!-- Area Chart Example-->
@@ -200,12 +221,10 @@
           <div class="card mb-3">
             <div class="card-header">
               <i class="fa fa-bar-chart"></i> Media Captada Diaria</div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-sm-8 my-auto">
-                  <canvas id="myBarChart" width="100" height="50"></canvas>
-                </div>
-              </div>
+            <div class="card-body">             
+              <div class="col-sm-8 my-auto">
+                <canvas id="myBarChart" width="100%" height="50"></canvas>
+              </div>             
             </div>
             <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
           </div>
@@ -222,8 +241,7 @@
             <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
           </div>
         </div>
-	  </div>
-	  
+	  </div>	  
     <footer class="sticky-footer">
       <div class="container">
         <div class="text-center">
@@ -266,10 +284,93 @@
 	<script type="text/javascript" src="{{ url_for('static', filename='js/sb-admin.min.js') }}"></script>
     <!-- Custom scripts for this page-->
 	<script type="text/javascript" src="{{ url_for('static', filename='js/sb-admin-datatables.min.js') }}"></script>	  
-	<script type="text/javascript" src="{{ url_for('static', filename='js/sb-admin-charts.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/sb-admin-charts.js') }}"></script>
+
+  <script>
+  $(document).ready(function() 
+{
+    Highcharts.setOptions({
+        global: {
+            useUTC: false
+        }
+      });
+
+      Highcharts.chart('container-grafico-dinamico', {
+          chart: {
+              type: 'spline',
+              animation: Highcharts.svg, // don't animate in old IE
+              marginRight: 10,
+              events: {
+                  load: function () {
+
+                      // set up the updating of the chart each second
+                      var series = this.series[0];
+                      setInterval(function () {
+                          var x = (new Date()).getTime(), // current time
+                              y = Math.random();
+                          series.addPoint([x, y], true, true);
+                      }, 1000);
+                  }
+              }
+          },
+          title: {
+              text: 'Grafico de plotagem dinamica'
+          },
+          xAxis: {
+              type: 'datetime',
+              tickPixelInterval: 150
+          },
+          yAxis: {
+              title: {
+                  text: 'Potencia(W)'
+              },
+              plotLines: [{
+                  value: 0,
+                  width: 1,
+                  color: '#808080'
+              }]
+          },
+          tooltip: {
+              formatter: function () {
+                  return '<b>' + this.series.name + '</b><br/>' +
+                      Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                      Highcharts.numberFormat(this.y, 2);
+              }
+          },
+          legend: {
+              enabled: false
+          },
+          exporting: {
+              enabled: false
+          },
+          series: [{
+              name: 'Random data',
+              data: (function () {
+                  // generate an array of random data
+                  var data = [],
+                      time = (new Date()).getTime(),
+                      i;
+
+                  for (i = -19; i <= 0; i += 1) {
+                      data.push({
+                          x: time + i * 1000,
+                          y: Math.random()
+                      });
+                  }
+                  return data;
+              }())
+          }]
+      });
+  });
+
+</script>
   <script>
 
-    $(document).ready(function(){autoupdate_geral();})
+    $(document).ready(
+        function()
+        {
+            autoupdate_geral();
+        })
 
     function update_potenciometro()
     {
@@ -296,7 +397,27 @@
         function(data)
         {
             console.log(data);
-            $('#temp_cpu').text(data);
+            $('#temp_cpu').text(data + ' °C');
+        });
+    }
+
+    function update_mem_ram()
+    {
+        $.get("/p_mem",{},
+        function(data)
+        {
+            console.log(data);
+            $('#p_mem').text(data + ' %');
+        });
+    }
+
+    function update_disc()
+    {
+        $.get("/p_disc",{},
+        function(data)
+        {
+            console.log(data);
+            $('#p_disc').text(data + ' %');
         });
     }
 
@@ -305,8 +426,10 @@
     {
         update_temperatura();
         update_potenciometro();
-        update_temp_cpu()
-        setTimeout(function(){autoupdate_geral();}, 500);
+        update_temp_cpu();
+        update_mem_ram();
+        update_disc();
+        setTimeout(function(){autoupdate_geral();}, 1000);
     }
 
 </script>
