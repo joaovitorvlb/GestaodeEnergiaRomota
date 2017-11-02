@@ -158,7 +158,8 @@
         <div class="col-xl-3 col-sm-6 mb-3">
           <div class="card text-white bg-primary o-hidden h-100">
             <a class="card-footer text-white clearfix small z-1">
-              <span class="float-left">Temperatura CPU</span>
+              <span class="float-left">Temperatura CPU</span> <hr>
+              <span class="float-left" id="temp_cpu"></span>
             </a>
           </div>
         </div>
@@ -266,6 +267,49 @@
     <!-- Custom scripts for this page-->
 	<script type="text/javascript" src="{{ url_for('static', filename='js/sb-admin-datatables.min.js') }}"></script>	  
 	<script type="text/javascript" src="{{ url_for('static', filename='js/sb-admin-charts.min.js') }}"></script>
+  <script>
+
+    $(document).ready(function(){autoupdate_geral();})
+
+    function update_potenciometro()
+    {
+        $.get("/update_potenciometro",{},
+        function(data)
+        {
+            console.log(data);
+        });
+    }
+
+    function update_temperatura()
+    {
+        $.get("/update_temperatura",{},
+        function(data)
+        {
+            console.log(data);
+         
+        });
+    }
+
+    function update_temp_cpu()
+    {
+        $.get("/t_cpu",{},
+        function(data)
+        {
+            console.log(data);
+            $('#temp_cpu').text(data);
+        });
+    }
+
+
+    function autoupdate_geral()
+    {
+        update_temperatura();
+        update_potenciometro();
+        update_temp_cpu()
+        setTimeout(function(){autoupdate_geral();}, 500);
+    }
+
+</script>
   </div>
 </body>
 </html>
