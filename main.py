@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def principal():
-    return render_template('principal.html')
+    return render_template('index.html')
 
 @app.route('/sensores')
 def sensores_rota():
@@ -94,6 +94,13 @@ def potenciometro():
     p = sensores.leitura_pot()
     return jsonify(p)
 
+@app.route('/oi/<vl1>/<vl2>')
+def oi(vl1,vl2):
+    print 'oi'
+    print vl1
+    print vl2
+    return ('OK', 200)
+
 def cria_tabela_sensores():
     try:
         conect = sqlite3.connect('site.db')
@@ -139,34 +146,7 @@ def adiciona_dado_sensores(corrente1, corrente2, corrente3, corrente4):
         print e
         return False
 
-class ThreadSock(threading.Thread):
-    def __init__(self, ip_host, port_host):
-        threading.Thread.__init__(self)
-        self.ip_host = ip_host
-        self.port_host = port_host
 
-    def run(self):
-        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.bind((self.ip_host, self.port_host))
-        print 'ok'
-        server.listen(5)
-        while True:
-            client, add = server.accept()                                #fica aguardando alguem conectar
-            data = client.recv(1024)                                     #cloloca todo o buffer em data
-            if data:
-                print 'Received from ', add[0], ' >> ', data
-                data = data.strip()                                      #retira as quebras de linha 
-                tag_pct, i_00, i_01, i_02, i_03 = data.split(':')        #separa a string com lilmitador :
-
-                if tag_pct == 'ESP01-IIII':
-                    print 'Processing package'
-                    print 'Package tag   ', tag_pct
-                    print 'Load device 1 ', i_00, ' mA'
-                    print 'Load device 2 ', i_01, ' mA'
-                    print 'Load device 3 ', i_02, ' mA'
-                    print 'Load device 4 ', i_03, ' mA'
-                    cria_tabela_sensores()
-                    adiciona_dado_sensores(i_00, i_01, i_02, i_03)
 
 def guet_ip():
     gateways = netifaces.gateways()
@@ -178,7 +158,5 @@ def guet_ip():
 
 
 if __name__ == "__main__":
-    local_ip = guet_ip()                       #invoca funcao para retornar o IP local
-    sock_1 = ThreadSock(local_ip,500)          #cria objeto de socket dentro de uma thread
-    sock_1.start()                             #inicia a thread
+    local_ip = guet_ip()                       #invoca funcao para retornar o IP local                             #inicia a thread
     app.run(host=local_ip)                     #loop dp flask
