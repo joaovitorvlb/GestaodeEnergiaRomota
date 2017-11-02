@@ -101,6 +101,11 @@ def oi(vl1,vl2):
     print vl2
     return ('OK', 200)
 
+@app.route('/t_cpu')
+def t_cpu():
+    i = sensores.get_cpu_temp()
+    return jsonify(i)
+
 def cria_tabela_sensores():
     try:
         conect = sqlite3.connect('site.db')
