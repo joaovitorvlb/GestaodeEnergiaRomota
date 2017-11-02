@@ -69,3 +69,9 @@ def escreve_lcd(texto_linha1, texto_linha2):
     tela.setCursor(1, 0)
     isto = str(texto_linha2)
     tela.write(isto)
+
+def get_cpu_temp():
+    with open('/sys/class/thermal/thermal_zone0/temp', 'r') as f:
+        temp = float(f.read()) / 1000.0
+    return temp
+
