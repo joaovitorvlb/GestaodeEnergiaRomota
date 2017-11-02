@@ -1,5 +1,6 @@
 
 from flask import Flask, render_template, jsonify
+import __future__ 
 import socket
 import requests
 import sqlite3
@@ -31,8 +32,6 @@ def graficos(valor):
 
 @app.route('/rele/<valor>')
 def rele(valor):
-    #valor = int(valor)
-    print valor
     if valor == '1':
         sensores.liga_rele()
     elif valor == '0':
@@ -43,8 +42,6 @@ def rele(valor):
 
 @app.route('/led1/<valor>')
 def led1(valor):
-    #valor = int(valor)
-    print valor
     if valor == '1':
         sensores.liga_led1()
     elif valor == '0':
@@ -55,8 +52,6 @@ def led1(valor):
 
 @app.route('/led2/<valor>')
 def led2(valor):
-    #valor = int(valor)
-    print valor
     if valor == '1':
         sensores.liga_led2()
     elif valor == '0':
@@ -94,11 +89,10 @@ def potenciometro():
     p = sensores.leitura_pot()
     return jsonify(p)
 
-@app.route('/oi/<vl1>/<vl2>')
-def oi(vl1,vl2):
-    print 'oi'
-    print vl1
-    print vl2
+@app.route('/oi/<vl1>/<vl2>/<vl3>')
+def oi(vl1,vl2,vl3):
+    cria_tabela_sensores()
+    adiciona_dado_sensores(vl1,vl2,vl3)
     return ('OK', 200)
 
 @app.route('/t_cpu')
@@ -106,22 +100,44 @@ def t_cpu():
     i = sensores.get_cpu_temp()
     return jsonify(i)
 
+@app.route('/p_mem')
+def p_mem():
+    meminfo = sensores.meminfo()
+    est1 = ('{}'.format(meminfo['MemTotal']))
+    est1 = (est1.strip('kB'))
+    est1 = long(est1)
+    est2 = ('{}'.format(meminfo['MemFree']))
+    est2 = (est2.strip('kB'))
+    est2 = long(est2)
+    uso = ((est2 *100) / est1)
+    return jsonify(uso)
+
+
+@app.route('/p_disc')
+def partirion():
+    disc = sensores.partition()
+    part_t = long(disc[0][2])
+    part_1 = long(disc[1][2])
+    part_2 = long(disc[2][2])
+    part = part_t / (part_1 + part_2)
+    return jsonify(part)
+
+
 def cria_tabela_sensores():
     try:
         conect = sqlite3.connect('site.db')
         cursor = conect.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS sensores
                          (id        INTEGER PRIMARY KEY,
-                          corrente1 REAL, 
-                          corrente2 REAL, 
-                          corrente3 REAL,
-                          corrente4 REAL,
+                          corrente REAL, 
+                          tensao   REAL, 
+                          potencia REAL,
                           tempo TIMESTAMP DEFAULT (DATETIME('now')) 
                           )''')
         conect.commit()
         conect.close()
     except Exception as e:
-        print 'except - cria_tabela_sensores', e
+        print( 'except - cria_tabela_sensores', e)
 
 def retorna_dados_sensores(quantidade=None):
     conect = sqlite3.connect('site.db')
@@ -132,15 +148,13 @@ def retorna_dados_sensores(quantidade=None):
         cursor.execute('''SELECT * FROM sensores ORDER BY datetime(tempo) DESC LIMIT ?''', (quantidade,))
     return cursor.fetchall()
 
-def adiciona_dado_sensores(corrente1, corrente2, corrente3, corrente4):
+def adiciona_dado_sensores(corrente, tensao, potencia):
     try:
-        conect     = sqlite3.connect('site.db')
+        conect = sqlite3.connect('site.db')
         cursor = conect.cursor()
-        #dat  = time.strftime('%d/%m/%Y')
-        #hora = time.strftime('%H:%M:%S')
-        tempo = datetime.datetime.now()
-        cursor.execute('''INSERT INTO sensores (tempo, corrente1, corrente2, corrente3, corrente4)
-                          VALUES(?,?,?,?,?)''',(tempo, corrente1, corrente2, corrente3, corrente4))
+        tempo  = datetime.datetime.now()
+        cursor.execute('''INSERT INTO sensores (tempo, corrente, tensao, potencia)
+                          VALUES(?,?,?,?)''',(tempo, corrente, tensao, potencia))
         conect.commit()
         conect.close()
         if cursor.rowcount > 0:
@@ -148,10 +162,8 @@ def adiciona_dado_sensores(corrente1, corrente2, corrente3, corrente4):
         else:
             return False
     except Exception as e:
-        print e
+        print( e)
         return False
-
-
 
 def guet_ip():
     gateways = netifaces.gateways()
