@@ -7,11 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Latest compiled and minified CSS -->
-    <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
-    <link href="{{url_for('static',filename='vendor/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" 
+          rel="stylesheet">
+    <link href="{{url_for('static',filename='vendor/font-awesome/css/font-awesome.min.css')}}" 
+          rel="stylesheet" type="text/css">
     <link href="{{url_for('static',filename='vendor/datatables/dataTables-bootstrap4.css')}}" >
     <link href="{{url_for('static',filename='css/sb-admin.css')}}" rel="stylesheet">
-
+    <!-- Arquivos highcharts -->
     <script type="text/javascript" 
             src="{{ url_for('static', filename='highcharts/exporting.js') }}">
     </script>
@@ -21,10 +23,13 @@
     </script>
 
     <script type="text/javascript" 
-            src="{{ url_for('static', filename='highcharts/highcharts-more.js') }}">
+          src="{{ url_for('static', filename='highcharts/highcharts-more.js') }}">
     </script>
-    
-    </head>
+
+    <!-- Arquivos joystick -->
+
+
+</head>
 
 
     <body class="fixed-nav sticky-footer bg-dark" id="page-top">
@@ -206,42 +211,29 @@
           <div id="container-grafico-dinamico" width="100%" height="30"></div>
         </div>
       </div>
-      <!-- Area Chart Example-->
       <div class="card mb-3">
         <div class="card-header">
-          <i class="fa fa-area-chart"></i> Intensidade de Energia Captada</div>
+          <i class="fa fa-area-chart"></i> Media Captada Diaria</div>
         <div class="card-body">
-          <canvas id="myAreaChart" width="100%" height="30"></canvas>
+          <div id="container-grafico-colunas" width="100%" height="30"></div>
         </div>
-        <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-      </div>
-      <div class="row">
-        <div class="col-lg-8">
-          <!-- Example Bar Chart Card-->
-          <div class="card mb-3">
-            <div class="card-header">
-              <i class="fa fa-bar-chart"></i> Media Captada Diaria</div>
-            <div class="card-body">             
-              <div class="col-sm-8 my-auto">
-                <canvas id="myBarChart" width="100%" height="50"></canvas>
-              </div>             
-            </div>
-            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-          </div>
-		</div>
+      </div> 
+       <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-area-chart"></i> Teste Grafico</div>
+        <div class="card-body">
+          <div id="container-teste-grafico" width="100%" height="30"></div>
+          <div id="test-grafico" ></div>
+          <div id="test-str" ></div>
+          <div id="test-str1" ></div>
+          <div id="test-str2" ></div>
+          <div id="test-str3" ></div>
+          <div id="test-str4" ></div>
+          <div id="test-str5" ></div>
+          <div id="test-dat" ></div>
+          <div id="test-dat-unx" ></div>
         </div>
-        <div class="col-lg-4">
-          <!-- Example Pie Chart Card-->
-          <div class="card mb-3">
-            <div class="card-header">
-              <i class="fa fa-pie-chart"></i> Pie Chart Example</div>
-            <div class="card-body">
-              <canvas id="myPieChart" width="100%" height="100"></canvas>
-            </div>
-            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
-          </div>
-        </div>
-	  </div>	  
+      </div>     	  
     <footer class="sticky-footer">
       <div class="container">
         <div class="text-center">
@@ -286,84 +278,10 @@
 	<script type="text/javascript" src="{{ url_for('static', filename='js/sb-admin-datatables.min.js') }}"></script>	  
 	<script type="text/javascript" src="{{ url_for('static', filename='js/sb-admin-charts.js') }}"></script>
 
-  <script>
-  $(document).ready(function() 
-{
-    Highcharts.setOptions({
-        global: {
-            useUTC: false
-        }
-      });
+  <script type="text/javascript" 
+          src="{{ url_for('static', filename='js/execute-joystick.js') }}"></script>
 
-      Highcharts.chart('container-grafico-dinamico', {
-          chart: {
-              type: 'spline',
-              animation: Highcharts.svg, // don't animate in old IE
-              marginRight: 10,
-              events: {
-                  load: function () {
-
-                      // set up the updating of the chart each second
-                      var series = this.series[0];
-                      setInterval(function () {
-                          var x = (new Date()).getTime(), // current time
-                              y = Math.random();
-                          series.addPoint([x, y], true, true);
-                      }, 1000);
-                  }
-              }
-          },
-          title: {
-              text: 'Grafico de plotagem dinamica'
-          },
-          xAxis: {
-              type: 'datetime',
-              tickPixelInterval: 150
-          },
-          yAxis: {
-              title: {
-                  text: 'Potencia(W)'
-              },
-              plotLines: [{
-                  value: 0,
-                  width: 1,
-                  color: '#808080'
-              }]
-          },
-          tooltip: {
-              formatter: function () {
-                  return '<b>' + this.series.name + '</b><br/>' +
-                      Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                      Highcharts.numberFormat(this.y, 2);
-              }
-          },
-          legend: {
-              enabled: false
-          },
-          exporting: {
-              enabled: false
-          },
-          series: [{
-              name: 'Random data',
-              data: (function () {
-                  // generate an array of random data
-                  var data = [],
-                      time = (new Date()).getTime(),
-                      i;
-
-                  for (i = -19; i <= 0; i += 1) {
-                      data.push({
-                          x: time + i * 1000,
-                          y: Math.random()
-                      });
-                  }
-                  return data;
-              }())
-          }]
-      });
-  });
-
-</script>
+  
   <script>
 
     $(document).ready(
@@ -429,7 +347,8 @@
         update_temp_cpu();
         update_mem_ram();
         update_disc();
-        setTimeout(function(){autoupdate_geral();}, 1000);
+        update_test_grafico();
+        setTimeout(function(){autoupdate_geral();}, 3000);
     }
 
 </script>
