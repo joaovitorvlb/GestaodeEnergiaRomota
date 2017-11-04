@@ -1,108 +1,232 @@
-// Chart.js scripts
-// -- Set new default font family and font color to mimic Bootstrap's default styling
-Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-Chart.defaults.global.defaultFontColor = '#292b2c';
-// -- Area Chart Example
-var ctx = document.getElementById("myAreaChart");
-var myLineChart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: ["Mar 1", "Mar 2", "Mar 3", "Mar 4", "Mar 5", "Mar 6", "Mar 7", "Mar 8", "Mar 9", "Mar 10", "Mar 11", "Mar 12", "Mar 13"],
-    datasets: [{
-      label: "Sessions",
-      lineTension: 0.3,
-      backgroundColor: "rgba(2,117,216,0.2)",
-      borderColor: "rgba(2,117,216,1)",
-      pointRadius: 5,
-      pointBackgroundColor: "rgba(2,117,216,1)",
-      pointBorderColor: "rgba(255,255,255,0.8)",
-      pointHoverRadius: 5,
-      pointHoverBackgroundColor: "rgba(2,117,216,1)",
-      pointHitRadius: 20,
-      pointBorderWidth: 2,
-      data: [10000, 30162, 26263, 18394, 18287, 28682, 31274, 33259, 25849, 24159, 32651, 31984, 38451],
-    }],
+
+$(document).ready(function() 
+{
+    Highcharts.setOptions({
+        global: {
+            useUTC: false
+        }
+      });
+
+      Highcharts.chart('container-grafico-dinamico', {
+          chart: {
+              type: 'spline',
+              animation: Highcharts.svg, // don't animate in old IE
+              marginRight: 10,
+              events: {
+                  load: function () {
+
+                      // set up the updating of the chart each second
+                      var series = this.series[0];
+                      setInterval(function () 
+                      {    
+                          var x = (new Date()).getTime(), // current time
+                              y = Math.random();
+                          series.addPoint([x, y], true, true);
+                      }, 1000);
+                  }
+              }
+          },
+          title: {
+              text: 'Grafico de plotagem dinamica'
+          },
+          xAxis: {
+              type: 'datetime',
+              tickPixelInterval: 150
+          },
+          yAxis: {
+              title: {
+                  text: 'Potencia(W)'
+              },
+              plotLines: [{
+                  value: 0,
+                  width: 1,
+                  color: '#808080'
+              }]
+          },
+          tooltip: {
+              formatter: function () {
+                  return '<b>' + this.series.name + '</b><br/>' +
+                      Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                      Highcharts.numberFormat(this.y, 2);
+              }
+          },
+          legend: {
+              enabled: false
+          },
+          exporting: {
+              enabled: false
+          },
+          series: [{
+              name: 'Random data',
+              data: (function () {
+                  // generate an array of random data
+                  var data = [],
+                      time = (new Date()).getTime(),
+                      i;
+
+                  for (i = -19; i <= 0; i += 1) {
+                      data.push({
+                          x: time + i * 1000,
+                          y: Math.random()
+                      });
+                  }
+                  return data;
+              }())
+          }]
+      });
+  });
+
+  var chart = Highcharts.chart('container-grafico-colunas', {
+
+  chart: {
+    type: 'column'
   },
-  options: {
-    scales: {
-      xAxes: [{
-        time: {
-          unit: 'date'
-        },
-        gridLines: {
-          display: false
-        },
-        ticks: {
-          maxTicksLimit: 7
-        }
-      }],
-      yAxes: [{
-        ticks: {
-          min: 0,
-          max: 40000,
-          maxTicksLimit: 5
-        },
-        gridLines: {
-          color: "rgba(0, 0, 0, .125)",
-        }
-      }],
-    },
-    legend: {
-      display: false
+
+  title: {
+    text: ''
+  },
+
+  subtitle: {
+    text: ''
+  },
+
+  legend: {
+    align: 'right',
+    verticalAlign: 'middle',
+    layout: 'vertical'
+  },
+
+  xAxis: {
+    categories: ['dom','seg','ter','qua','qui','sex','sab',],
+    labels: {
+      x: -10
     }
+  },
+
+  yAxis: {
+    allowDecimals: false,
+    title: {
+      text: 'Potencia Durante a Semana'
+    }
+  },
+  
+
+  series: [{
+    name: 'Semana',
+    data: [8, 5, 4, 7, 5, 3, 1]
+  }],
+
+  responsive: {
+    rules: [{
+      condition: {
+        maxWidth: 500
+      },
+      chartOptions: {
+        legend: {
+          align: 'center',
+          verticalAlign: 'bottom',
+          layout: 'horizontal'
+        },
+        yAxis: {
+          labels: {
+            align: 'left',
+            x: 0,
+            y: -5
+          },
+          title: {
+            text: null
+          }
+        },
+        subtitle: {
+          text: null
+        },
+        credits: {
+          enabled: false
+        }
+      }
+    }]
   }
 });
-// -- Bar Chart Example
-var ctx = document.getElementById("myBarChart");
-var myLineChart = new Chart(ctx, {
-  type: 'bar',
-  data: {
-    labels: ["January", "February", "March", "April", "May", "June"],
-    datasets: [{
-      label: "Revenue",
-      backgroundColor: "rgba(2,117,216,1)",
-      borderColor: "rgba(2,117,216,1)",
-      data: [4215, 5312, 6251, 7841, 9821, 14984],
-    }],
-  },
-  options: {
-    scales: {
-      xAxes: [{
-        time: {
-          unit: 'month'
-        },
-        gridLines: {
-          display: false
-        },
-        ticks: {
-          maxTicksLimit: 6
-        }
-      }],
-      yAxes: [{
-        ticks: {
-          min: 0,
-          max: 15000,
-          maxTicksLimit: 5
-        },
-        gridLines: {
-          display: true
-        }
-      }],
+
+$('#small').click(function() {
+  chart.setSize(400, 300);
+});
+
+$('#large').click(function() {
+  chart.setSize(600, 300);
+});
+
+var chartingOptions = {
+    chart: {
+        renderTo: 'container-teste-grafico',
+        type: 'scatter'
     },
-    legend: {
-      display: false
-    }
-  }
-});
-// -- Pie Chart Example
-var ctx = document.getElementById("myPieChart");
-var myPieChart = new Chart(ctx, {
-  type: 'pie',
-  data: {
-    labels: ["Blue", "Red", "Yellow", "Green"],
-    datasets: [{
-      data: [12.21, 15.58, 11.25, 8.32],
-      backgroundColor: ['#007bff', '#dc3545', '#ffc107', '#28a745'],
-    }],
-  },
-});
+    xAxis: {
+              type: 'datetime',
+              tickPixelInterval: 150
+
+
+          },
+          tooltip: {
+              formatter: function () {
+                  return '<b>' + this.series.name + '</b><br/>' +
+                      Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                      Highcharts.numberFormat(this.y, 2);
+              }
+          },
+    series: [{
+        name: 'Plot',
+        data: []
+
+      },
+      {
+        name: 'Plot2',
+        data: []
+
+      },
+      {
+        name: 'Plot3',
+        data: []
+
+      }]
+
+};
+var chart = new Highcharts.Chart(chartingOptions);
+
+function update_test_grafico() 
+{
+    $.get("/graficos/1",{},
+        function(data)
+        {
+            console.log(data);
+            var temp = new Array();
+            var str = new Array();
+            str = String(data);
+            temp = str.split(",");           
+            $('#test-grafico').text(data);
+            $('#test-str1').text(temp[0]);
+            $('#test-str2').text(temp[1]);
+            $('#test-str3').text(temp[2]);
+            $('#test-str4').text(temp[3]);
+            $('#test-str5').text(temp[4]);
+
+
+            est = String(temp[4]);
+            Xt = new Date(est.replace(' ', 'T')).getTime();
+            Y1 = parseInt(temp[1]);
+            Y2 = parseInt(temp[2]);
+            Y3 = parseInt(temp[3]);
+
+
+
+            chart.series[0].addPoint({x: Xt, y: Y1}, false);
+            chart.series[1].addPoint({x: Xt, y: Y2}, false);
+            chart.series[2].addPoint({x: Xt, y: Y3}, false);
+            chart.redraw(); 
+
+           var dat = (new Date()).getTime();
+           $('#test-dat').text(dat);
+           $('#test-dat-unx').text(Xt);
+        });          
+}
+
