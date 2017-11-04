@@ -28,7 +28,7 @@ def atuadores():
 @app.route('/graficos/<valor>')
 def graficos(valor):
     valores = retorna_dados_sensores(valor)
-    return render_template('graficos.html', valores=valores)
+    return jsonify(valores)
 
 @app.route('/rele/<valor>')
 def rele(valor):
