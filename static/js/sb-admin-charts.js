@@ -60,7 +60,7 @@ var chartingOptions2 = {
                 text: 'Source: WorldClimate.com'
             },
             xAxis: {
-            type: 'category'
+            type: 'datetime'
                 
             },
             yAxis: {
