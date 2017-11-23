@@ -94,32 +94,36 @@ var chart2 = new Highcharts.Chart(chartingOptions2);
 $('#button2').click(function() 
 {
 
-    chart2.series[0].setData([[ 'oi',5],[ 'tchau',50]]); //Atualiza colunas do grafico
-});
+            chart2.series[0].setData([[ 'oi',5],[ 'tchau',50]]); //Atualiza colunas do grafic0
+        });
 
 
    
 function update_test_grafico() 
 {
-    $.get("/graficos/1",{},
+    $.get("/graficos/1",{},   //Solicita get ao servidor e aguarda a ultima lina do BD
         function(data)
         {
+            var series = chart.series[0];
+
             Xt = new Date(data[0][4].replace(' ', 'T')).getTime();    //Converte de data para formato calendario Unix
-            Y1 = parseInt(data[0][1]);
-            Y2 = parseInt(data[0][2]);
-            Y3 = parseInt(data[0][3]);
+            Y1 = parseInt(data[0][1]);        //Garante que os valores sejam inteiros
+            Y2 = parseInt(data[0][2]);        //Garante que os valores sejam inteiros
+            Y3 = parseInt(data[0][3]);        //Garante que os valores sejam inteiros
 
             chart.series[0].addPoint({x: Xt, y: Y1}, false);
             chart.series[1].addPoint({x: Xt, y: Y2}, false);
             chart.series[2].addPoint({x: Xt, y: Y3}, false);
-            chart.redraw(); 
+            chart.redraw();
 
             if(series.data.length > 20)              //Se a quandidade de plotagens for maior que 20
             {
               chart.series[0].data[0].remove();      //Remove data 0 da plotagem 0
-              chart.series[1].data[0].remove();      //Remove data 0 da plotagem 0
-              chart.series[2].data[0].remove();      //Remove data 0 da plotagem 0
+              chart.series[1].data[0].remove();      //Remove data 0 da plotagem 1
+              chart.series[2].data[0].remove();      //Remove data 0 da plotagem 2
             }
+
+            $('#test-tabela').text(Xt);
         });          
 }
 
@@ -131,6 +135,8 @@ function update_20_grafico()
           var tebela = new Array();
           tebela = data;
           $('#test-tabela').text(tebela[3][3]);
+
+
         });          
 }
 
