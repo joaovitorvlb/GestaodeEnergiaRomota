@@ -79,8 +79,8 @@ var chartingOptions2 = {
             series: [{
                         name: 'Tokyo',
                         data: [
-                                ['Shanghai', 23.7],
-                                ['Lagos', 16.1]
+                                [1511409351721, 23.7],
+                                [1511409387288, 16.1]
                               ]
             
                     }]
@@ -94,7 +94,7 @@ var chart2 = new Highcharts.Chart(chartingOptions2);
 $('#button2').click(function() 
 {
 
-            chart2.series[0].setData([[ 'oi',5],[ 'tchau',50]]); //Atualiza colunas do grafic0
+            chart2.series[0].setData([[ 1511409422991,5],[1511409437340,50]]); //Atualiza colunas do grafic0
         });
 
 
