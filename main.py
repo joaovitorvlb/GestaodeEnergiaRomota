@@ -5,7 +5,6 @@ import socket
 import requests
 import threading
 import netifaces
-import datetime
 import time
 import sensores
 import sqlite_
@@ -19,17 +18,9 @@ app = Flask(__name__)
 def principal():
     return render_template('index.html')
 
-@app.route('/sensores')
-def sensores_rota():
-    return render_template('sensores.html')
-
-@app.route('/atuadores')
-def atuadores():
-    return render_template('atuadores.html')
-
 @app.route('/graficos/<valor>')
 def graficos(valor):
-    valores = sqlite_.retorna_dados_sensores(valor)
+    valores = sqlite_.retorna_dados_coleta(valor)
     return jsonify(valores)
 
 @app.route('/rele/<valor>')
@@ -91,10 +82,10 @@ def potenciometro():
     p = sensores.leitura_pot()
     return jsonify(p)
 
-@app.route('/sensores1/<vl1>/<vl2>/<vl3>')
-def oi(vl1,vl2,vl3):
-    sqlite_.cria_tabela_sensores()
-    sqlite_.adiciona_dado_sensores(vl1,vl2,vl3)
+@app.route('/sensores1/<vl1>/<vl2>')
+def oi(vl1,vl2):
+    sqlite_.cria_tabela_coleta()
+    sqlite_.adiciona_dado_coleta(vl1,vl2)
     return ('OK', 200)
 
 @app.route('/t_cpu')
@@ -128,5 +119,5 @@ def partirion():
 if __name__ == "__main__":
     loop = loop.Loop()
     loop.start()
-    local_ip = sistema.guet_ip()                       #invoca funcao para retornar o IP local                             #inicia a thread
+    local_ip = sistema.guet_ip()                #invoca funcao para retornar o IP local                             #inicia a thread
     app.run(host=local_ip)                     #loop dp flask
