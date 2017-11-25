@@ -1,5 +1,6 @@
 import netifaces
 import collections
+import sqlite_
 
 def get_cpu_temp():
     with open('/sys/class/thermal/thermal_zone0/temp', 'r') as f:
