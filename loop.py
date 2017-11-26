@@ -18,6 +18,7 @@ class Loop(Thread):
 			print " "
 			print setp
 			print " "
+			print main.ist
 			if setp > now:                           #Indica quando chega um novo dia
 				flag = 1	                         #flag para selar atá a proxima condição
 
