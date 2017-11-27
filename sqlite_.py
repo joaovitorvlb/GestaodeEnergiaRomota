@@ -41,6 +41,15 @@ def retorna_dados_coleta(quantidade=None):
         cursor.execute('''SELECT * FROM coleta ORDER BY datetime(tempo) DESC LIMIT ?''', (quantidade,))
     return cursor.fetchall()
 
+def retorna_dados_media(quantidade=None):
+    conect = sqlite3.connect('GestaoEnergia.db')
+    cursor = conect.cursor()
+    if not quantidade:
+        cursor.execute('''SELECT * FROM media ORDER BY datetime(tempo) ASC''')
+    else:
+        cursor.execute('''SELECT * FROM media ORDER BY datetime(tempo) DESC LIMIT ?''', (quantidade,))
+    return cursor.fetchall()
+
 def adiciona_dado_coleta(potencia, bateria):
     try:
         conect = sqlite3.connect('GestaoEnergia.db')
@@ -58,13 +67,13 @@ def adiciona_dado_coleta(potencia, bateria):
         print( e)
         return False
 
-def adiciona_dado_media(media, tempo):
+def adiciona_dado_media(media, bateria):
     try:
         conect = sqlite3.connect('GestaoEnergia.db')
         cursor = conect.cursor()
         tempo  = datetime.datetime.now()
-        cursor.execute('''INSERT INTO media (media, tempo)
-                          VALUES(?,?)''',(media, tempo))
+        cursor.execute('''INSERT INTO media (media, bateria, tempo)
+                          VALUES(?,?,?)''',(media, bateria, tempo))
         conect.commit()
         conect.close()
         if cursor.rowcount > 0:
