@@ -1,5 +1,6 @@
 
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify,  flash, redirect, request, session, abort
+import os
 import __future__ 
 import socket
 import requests
@@ -16,6 +17,26 @@ bat = 0
 cont = 0
 
 app = Flask(__name__)
+
+@app.route('/')
+def home():
+    if not session.get('logged_in'):
+        return render_template('login.html')
+    else:
+        return render_template('index.html')
+ 
+@app.route('/login', methods=['POST'])
+def do_admin_login():
+    if request.form['password'] == 'password' and request.form['username'] == 'admin':
+        session['logged_in'] = True
+    else:
+        flash('wrong password!')
+    return home()
+ 
+@app.route("/logout")
+def logout():
+    session['logged_in'] = False
+    return home()
 
 @app.route('/')
 def principal():
@@ -125,7 +146,9 @@ def partirion():
 
 
 if __name__ == "__main__":
+    app.secret_key = os.urandom(12)
     loop = loop.Loop()
     loop.start()
     local_ip = sistema.guet_ip()                #invoca funcao para retornar o IP local                             #inicia a thread
     app.run(host=local_ip)                     #loop dp flask
+
