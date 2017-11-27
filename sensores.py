@@ -74,24 +74,5 @@ def escreve_lcd(texto_linha1, texto_linha2):
     isto = str(texto_linha2)
     tela.write(isto)
 
-def get_cpu_temp():
-    with open('/sys/class/thermal/thermal_zone0/temp', 'r') as f:
-        temp = float(f.read()) / 1000.0
-    return temp
-
-def meminfo():
-    meminfo=OrderedDict()
-
-    with open('/proc/meminfo') as f:
-        for line in f:
-            meminfo[line.split(':')[0]] = line.split(':')[1].strip()
-    return meminfo
-
-def partition():
-    procfile = open("/proc/partitions")
-    parts = [p.split() for p in procfile.readlines()[2:]]
-    procfile.close()
-    return parts
-
 
 
