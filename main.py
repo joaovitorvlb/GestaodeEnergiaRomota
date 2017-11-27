@@ -11,6 +11,9 @@ import sqlite_
 import sistema
 import loop
 
+pot = 0
+bat = 0
+cont = 0
 
 app = Flask(__name__)
 
@@ -21,6 +24,11 @@ def principal():
 @app.route('/graficos/<valor>')
 def graficos(valor):
     valores = sqlite_.retorna_dados_coleta(valor)
+    return jsonify(valores)
+
+@app.route('/media/<valor>')
+def media(valor):
+    valores = sqlite_.retorna_dados_media(valor)
     return jsonify(valores)
 
 @app.route('/rele/<valor>')
