@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 from flask import Flask, render_template, jsonify,  flash, redirect, request, session, abort
 import os
@@ -11,6 +12,9 @@ import sensores
 import sqlite_
 import sistema
 import loop
+import signal
+import sys
+import psutil
 
 pot = 0
 bat = 0
@@ -144,11 +148,20 @@ def partirion():
     part = part_t / (part_1 + part_2)
     return jsonify(part)
 
+def signal_handler(signal, frame):
+    for process in psutil.process_iter():                #varre lista de processo da maquina
+        if process.cmdline() == ['python', 'main.py']:   #se encontrar o processo
+            print ' '
+            print 'Processo: ' + str(process.pid)
+            print 'Processo encerrado!'
+            process.terminate()                          #pega o processo e termina
+
+signal.signal(signal.SIGINT, signal_handler)             #gera calback por KI caso Ctrl+C
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(12)
     loop = loop.Loop()
     loop.start()
     local_ip = sistema.guet_ip()                #invoca funcao para retornar o IP local                             #inicia a thread
-    app.run(host=local_ip)                     #loop dp flask
+    app.run(host=local_ip)                      #loop dp flask
 
