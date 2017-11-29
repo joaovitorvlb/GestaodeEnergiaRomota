@@ -14,6 +14,7 @@ window.onload = function ()
 //
 function updateVal() {
     //set new slider value
+    
     slider.setValue(document.getElementById("valbox").value);
  }
 
