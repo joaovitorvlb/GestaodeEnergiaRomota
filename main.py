@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, render_template, jsonify,  flash, redirect, request, session, abort
+from flask import Flask, render_template, jsonify, flash, redirect, request, session, abort
+from flask_sqlalchemy import SQLAlchemy
 import os
 import __future__ 
 import socket
@@ -8,7 +9,6 @@ import requests
 import threading
 import netifaces
 import time
-import sensores
 import sqlite_
 import sistema
 import loop
@@ -21,30 +21,69 @@ bat = 0
 cont = 0
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user.db'
+db = SQLAlchemy(app)
 
-@app.route('/')
+
+class User(db.Model):
+    """ Create user table"""
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True)
+    password = db.Column(db.String(80))
+    email = db.Column(db.String(80))
+
+    def __init__(self, username, password, email):
+        self.username = username
+        self.password = password
+        self.email = email
+
+
+@app.route('/', methods=['GET', 'POST'])
 def home():
+    """ Session control"""
     if not session.get('logged_in'):
         return render_template('login.html')
     else:
+        if request.method == 'POST':
+            username = getname(request.form['username'])
+            return render_template('index.html', data=getfollowedby(username))
         return render_template('index.html')
- 
-@app.route('/login', methods=['POST'])
-def do_admin_login():
-    if request.form['password'] == 'password' and request.form['username'] == 'admin':
-        session['logged_in'] = True
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Login Form"""
+    if request.method == 'GET':
+        return render_template('login.html')
     else:
-        flash('wrong password!')
-    return home()
- 
+        name = request.form['username']
+        passw = request.form['password']
+        try:
+            data = User.query.filter_by(username=name, password=passw).first()
+            if data is not None:
+                session['logged_in'] = True
+                return redirect(url_for('home'))
+            else:
+                return 'Dont Login'
+        except:
+            return "Dont Login"
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    """Register Form"""
+    if request.method == 'POST':
+        new_user = User(username=request.form['username'], password=request.form['password'], email=request.form['email'])
+        db.session.add(new_user)
+        db.session.commit()
+        return render_template('login.html')
+    return render_template('register.html')
+
 @app.route("/logout")
 def logout():
+    """Logout Form"""
     session['logged_in'] = False
-    return home()
+    return redirect(url_for('home'))
 
-@app.route('/')
-def principal():
-    return render_template('index.html')
 
 @app.route('/graficos/<valor>')
 def graficos(valor):
@@ -56,69 +95,18 @@ def media(valor):
     valores = sqlite_.retorna_dados_media(valor)
     return jsonify(valores)
 
-@app.route('/rele/<valor>')
-def rele(valor):
-    if valor == '1':
-        sensores.liga_rele()
-    elif valor == '0':
-        sensores.desliga_rele()
-    else:
-        return ('valor desconhecido', 200)
-    return ('OK', 200)
-
-@app.route('/led1/<valor>')
-def led1(valor):
-    if valor == '1':
-        sensores.liga_led1()
-    elif valor == '0':
-        sensores.desliga_led1()
-    else:
-        return ('valor desconhecido', 200)
-    return ('OK', 200)
-
-@app.route('/led2/<valor>')
-def led2(valor):
-    if valor == '1':
-        sensores.liga_led2()
-    elif valor == '0':
-        sensores.desliga_led2()
-    else:
-        return ('valor desconhecido', 200)
-    return ('OK', 200)
-
-@app.route('/lcd/<texto>')
-def lcd(texto):
-    texto_linha1, texto_linha2 = texto.split(',')
-    sensores.escreve_lcd(texto_linha1, texto_linha2)
-    return ('OK', 200)
-
-@app.route('/servo1/<valor>')
-def servo1(valor):
-    valor = int(valor)
-    sensores.move_servo1(valor)
-    return ('OK', 200)
-
-@app.route('/servo2/<valor>')
-def servo2(valor):
-    valor = int(valor)
-    sensores.move_servo2(valor)
-    return ('OK', 200)
-
-
 @app.route('/update_temperatura')
 def temperatura():
-    t = sensores.leitura_temperatura()
-    return jsonify(t)
+    return ('OK', 200)
 
 @app.route('/update_potenciometro')
 def potenciometro():
-    p = sensores.leitura_pot()
-    return jsonify(p)
+    return ('OK', 200)
 
-@app.route('/sensores1/<vl1>/<vl2>')
-def oi(vl1,vl2):
+@app.route('/sensores1/<vl1>/<vl2>/<vl3>/<vl4>/<vl5>/<vl6>')
+def oi(vl1,vl2,vl3,vl4,vl5,vl6):
     sqlite_.cria_tabela_coleta()
-    sqlite_.adiciona_dado_coleta(vl1,vl2)
+    sqlite_.adiciona_dado_coleta(vl3,vl4,vl5,vl6)
     return ('OK', 200)
 
 @app.route('/t_cpu')
@@ -159,9 +147,11 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)             #gera calback por KI caso Ctrl+C
 
 if __name__ == "__main__":
-    app.secret_key = os.urandom(12)
     loop = loop.Loop()
     loop.start()
-    local_ip = sistema.guet_ip()                #invoca funcao para retornar o IP local                             #inicia a thread
+    local_ip = sistema.guet_ip()                #invoca funcao para retornar o IP local 
+    db.create_all()
+    app.secret_key = "123"                           #inicia a thread
     app.run(host=local_ip)                      #loop dp flask
+
 
