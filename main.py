@@ -24,7 +24,6 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user.db'
 db = SQLAlchemy(app)
 
-
 class User(db.Model):
     """ Create user table"""
     id = db.Column(db.Integer, primary_key=True)
@@ -55,7 +54,6 @@ def login():
         try:
             data = User.query.filter_by(username=name, password=passw).first()  #verifica n banco de dados se existe usuário
             if data is not None:
-                print "if data is not none"
                 session['logged_in'] = True            #Flag da seção se torna true para autenticado geralmente inicia none
                 return redirect(url_for('home'))       #se tiver usuario cadastrado chama home e verifica flag de login
             else:
@@ -107,7 +105,7 @@ def oi(vl1,vl2,vl3,vl4,vl5,vl6):
 
 @app.route('/t_cpu')
 def t_cpu():
-    i = sistema.get_cpu_temp()
+    i = psutil.cpu_percent()
     return jsonify(i)
 
 @app.route('/p_mem')
