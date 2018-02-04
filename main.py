@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, render_template, jsonify, flash, redirect, request, session, abort
+from flask import Flask, render_template, jsonify, flash, redirect, request, session, abort, url_for
 from flask_sqlalchemy import SQLAlchemy
 import os
 import __future__ 
@@ -30,59 +30,55 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(80))
-    email = db.Column(db.String(80))
 
-    def __init__(self, username, password, email):
+    def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.email = email
+
 
 
 @app.route('/', methods=['GET', 'POST'])
-def home():
-    """ Session control"""
-    if not session.get('logged_in'):
+def home():                                      #Função que é chamada para fazer o conrole de seção com 1 id para cada seção
+    if not session.get('logged_in'):             #verifica se for true inicia seção senao finaliza
         return render_template('login.html')
     else:
-        if request.method == 'POST':
-            username = getname(request.form['username'])
-            return render_template('index.html', data=getfollowedby(username))
         return render_template('index.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    """Login Form"""
-    if request.method == 'GET':
+    if request.method == 'GET':                  #Verifica se é requisição GET
         return render_template('login.html')
     else:
         name = request.form['username']
         passw = request.form['password']
         try:
-            data = User.query.filter_by(username=name, password=passw).first()
+            data = User.query.filter_by(username=name, password=passw).first()  #verifica n banco de dados se existe usuário
             if data is not None:
-                session['logged_in'] = True
-                return redirect(url_for('home'))
+                print "if data is not none"
+                session['logged_in'] = True            #Flag da seção se torna true para autenticado geralmente inicia none
+                return redirect(url_for('home'))       #se tiver usuario cadastrado chama home e verifica flag de login
             else:
-                return 'Dont Login'
-        except:
-            return "Dont Login"
+                return render_template('login.html')   # se o usuaruio não exixtir retorna pagina login
 
-@app.route('/register', methods=['GET', 'POST'])
+        except:        
+            return render_template('login.html')        # Se alguma exceção for levantada nao finaliza e retorna para login
+
+@app.route('/registro', methods=['GET', 'POST'])
 def register():
     """Register Form"""
-    if request.method == 'POST':
-        new_user = User(username=request.form['username'], password=request.form['password'], email=request.form['email'])
-        db.session.add(new_user)
-        db.session.commit()
-        return render_template('login.html')
-    return render_template('register.html')
+    if request.method == 'POST':        #verifica se o formulario fez ação POST
+        new_user = User(username=request.form['username'], password=request.form['password'])  #pega valores e prepara para injetar no bd
+        db.session.add(new_user)               #Adiciona na fina de inserção
+        db.session.commit()                    #Dispara a inserção de dados no bd
+        return render_template('login.html')   #E retorna login para lgar no usuário cadastrado
+    return render_template('register.html')    # se o if não encontrar POST retorna pagina de registro
 
 @app.route("/logout")
 def logout():
     """Logout Form"""
-    session['logged_in'] = False
-    return redirect(url_for('home'))
+    session['logged_in'] = False      #se logout for chamado pega a flag e atribui false
+    return redirect(url_for('home'))  #Chama nome que vai verificar que a seção foi encerrada
 
 
 @app.route('/graficos/<valor>')
@@ -150,8 +146,8 @@ if __name__ == "__main__":
     loop = loop.Loop()
     loop.start()
     local_ip = sistema.guet_ip()                #invoca funcao para retornar o IP local 
-    db.create_all()
-    app.secret_key = "123"                           #inicia a thread
+    db.create_all()                             #verifica o modelo de tabela e cria o bd
+    app.secret_key = "123"                      #inicia a thread
     app.run(host=local_ip)                      #loop dp flask
 
 
