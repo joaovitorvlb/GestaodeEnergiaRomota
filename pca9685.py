@@ -41,6 +41,9 @@ class Pca9685(object):
 		self.i2c.write_byte_data(0x40, (0x05 + 4 + channel), buf[0])
 
 	def write_servo(self, channel, angle):
+		if angle >> 180:
+			angle = 180
+			
 		i = angle * 2.72
 		value = int(math.floor(i + 0.5))
 		buf = bytearray([0, 0]) 
