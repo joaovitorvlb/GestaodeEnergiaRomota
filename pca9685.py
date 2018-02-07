@@ -40,3 +40,16 @@ class Pca9685(object):
 		self.i2c.write_byte_data(0x40, (0x04 + 4 + channel), buf[1])
 		self.i2c.write_byte_data(0x40, (0x05 + 4 + channel), buf[0])
 
+	def write_servo(self, channel, angle):
+		i = angle * 2.72
+		value = int(math.floor(i + 0.5))
+		buf = bytearray([0, 0]) 
+		buf[1] = value & 0xFF
+		value >>= 8
+		buf[0] = value & 0xFF    
+
+		self.i2c.write_byte_data(0x40, (0x02 + 4 + channel), 0x00)
+		self.i2c.write_byte_data(0x40, (0x03 + 4 + channel), 0x00)
+		self.i2c.write_byte_data(0x40, (0x04 + 4 + channel), buf[1])
+		self.i2c.write_byte_data(0x40, (0x05 + 4 + channel), buf[0])
+
