@@ -18,7 +18,7 @@ dac1 = DAC(Pin(26))
  
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
-wlan.connect('IOT-2', 'mj110032')
+wlan.connect('Joao Vitor', 'mj110032')
 
 i2c = I2C(scl=Pin(22), sda=Pin(21))                 #pinos I2C do esp32
 
@@ -86,7 +86,7 @@ def temp_th(p_cs):
 def http_get(url1):                     #Faz requisição http
 	_, _, host, path = url1.split('/', 3)
 	s = socket.socket()
-	s.connect(("192.168.1.115", 5000))
+	s.connect(("192.168.0.13", 5000))
 	s.send(bytes('GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (path, host), 'utf8'))
 	while True:
 		data = s.recv(100)
@@ -138,7 +138,7 @@ while True:
 		bf5 = str(round((temp2 / setcont),2))
 		bf6 = str(round((il / setcont),2))
 	
-		url = 'http://192.168.1.115:5000/sensores1/' + bf1 + '/' + bf2 + '/' + bf3 + '/' + bf4 + '/' + bf5 + '/' + bf6     #Monta a string para enviar
+		url = 'http://192.168.0.13:5000/sensores1/' + bf1 + '/' + bf2 + '/' + bf3 + '/' + bf4 + '/' + bf5 + '/' + bf6     #Monta a string para enviar
 		
 		try:
 			http_get(url)                   #Tenta disparar uma conexão
