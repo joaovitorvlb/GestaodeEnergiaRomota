@@ -20,6 +20,8 @@ class Mpu6050(object):
         self.regaccel_y_L = 0x3e
         self.regaccel_z_H = 0x3f
         self.regaccel_z_L = 0x40
+        self.regtemp_H = 0x41
+        self.regtemp_L = 0x42
         self.i2c.write_byte_data(self.adr, self.power_mgmt_1, 0)
 
     def read_gyro_x(self):
@@ -60,6 +62,13 @@ class Mpu6050(object):
         buf = bytearray([0, 0]) 
         buf[1] = self.i2c.read_byte_data(self.adr, self.regaccel_z_H)
         buf[0] = self.i2c.read_byte_data(self.adr, self.regaccel_z_L)
+        value = (buf[1] << 8) + buf[0]
+        return value
+
+    def read_temp(self):
+        buf = bytearray([0, 0]) 
+        buf[1] = self.i2c.read_byte_data(self.adr, self.regtemp_H)
+        buf[0] = self.i2c.read_byte_data(self.adr, self.regtemp_L)
         value = (buf[1] << 8) + buf[0]
         return value
 
