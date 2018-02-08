@@ -9,44 +9,43 @@
   <meta name="author" content="">
   <title>SB Admin - Start Bootstrap Template</title>
   <!-- Bootstrap core CSS-->
-  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+   <link href="{{url_for('static',filename='vendor/bootstrap/css/bootstrap.min.css')}}" 
+          rel="stylesheet">
   <!-- Custom fonts for this template-->
-  <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+   <link href="{{url_for('static',filename='vendor/font-awesome/css/font-awesome.min.css')}}" 
+          rel="stylesheet" type="text/css">
   <!-- Custom styles for this template-->
-  <link href="css/sb-admin.css" rel="stylesheet">
+  <link href="{{url_for('static',filename='css/sb-admin.css')}}" rel="stylesheet">
 </head>
 
 <body class="bg-dark">
   <div class="container">
-    <div class="card card-register mx-auto mt-5">
+    <div class="card card-register mx-auto mt-5" style="width: 25rem;">
       <div class="card-header">Register an Account</div>
       <div class="card-body">
-        <form action="/register">
+        <form action="/registro" method="POST">
           <div class="form-group">
             <div class="form-row">
               <div class="col-md-6">
-                <label for="exampleInputName">Novo usuário</label>
-                <input type="username" name="username" placeholder="Username">
+                <label for="exampleInputName">Novo usuário</label><br>
+                <input type="username" name="username" placeholder="Username" size="37">
               </div>
             </div>
           </div>
-          <div class="form-group">
-            <label for="exampleInputEmail1">Email address</label>
-            <input type="password" name="email" placeholder="E-mail">
-          </div>
+         
           <div class="form-group">
             <div class="form-row">
               <div class="col-md-6">
-                <label for="exampleInputPassword1">Password</label>
-                <input type="password" name="password" placeholder="Password">
+                <label for="exampleInputPassword1">Password</label><br>
+                <input type="password" name="password" placeholder="Password" size="37" >
               </div>
             </div>
           </div>
-          <input type="submit" value="Log in">
+          <input type="submit" value="Create Acaunt" class="btn btn-primary btn-large btn-block">
         </form>
         <div class="text-center">
-          <a class="d-block small mt-3" href="login.html">Login Page</a>
-          <a class="d-block small" href="forgot-password.html">Forgot Password?</a>
+          <a class="d-block small mt-3" href="/login">Login Page</a>
+          <a class="d-block small" href="">Forgot Password?</a>
         </div>
       </div>
     </div>
