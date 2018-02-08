@@ -19,28 +19,22 @@
 
 <body class="bg-dark">
   <div class="container">
-    <div class="card card-login mx-auto mt-5">
+    <div class="card card-login mx-auto mt-5" style="width: 25rem;">
       <div class="card-header">Login</div>
       <div class="card-body">
         <form action="/login" method="POST">
           <div class="form-group">
-            <label for="exampleInputEmail1">Usuário</label></r>
-            <input type="username" name="username" placeholder="Username">
+            <label for="exampleInputEmail1">Usuário</label><br>
+            <input type="username" name="username" placeholder="Username" size="37">
           </div>
           <div class="form-group">
-            <label for="exampleInputPassword1">Password</label>
-            <input type="password" name="password" placeholder="Password">
-          </div>
-          <div class="form-group">
-            <div class="form-check">
-              <label class="form-check-label">
-                <input class="form-check-input" type="checkbox"> Remember Password</label>
-            </div>
+            <label for="exampleInputPassword1">Password</label><br>
+            <input type="password" name="password" placeholder="Password" size="37">
           </div>
           <input type="submit" value="Log in" class="btn btn-primary btn-large btn-block" >
         </form>
         <div class="text-center">
-          <a class="d-block small mt-3" href="/register">Register an Account</a>
+          <a class="d-block small mt-3" href="/registro">Register an Account</a>
         </div>
       </div>
     </div>
