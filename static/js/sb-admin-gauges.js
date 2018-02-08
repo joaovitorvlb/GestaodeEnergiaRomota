@@ -10,6 +10,7 @@ window.onload = function ()
     var widget = new PerfectWidgets.Widget("battery_meter", jsonModel);
     //getting slider object
     slider = widget.getByName("Slider1");
+    slider.setValue(43);
 }
 //
 function updateVal() {
@@ -18,6 +19,14 @@ function updateVal() {
     slider.setValue(document.getElementById("valbox").value);
  }
 
+ $('#button4').click(function() 
+{
+
+            updateVal();
+        });
+
+
 //----------------------------------------------------------------------------------------
 // ---------Fim do gauge de bateria
 //----------------------------------------------------------------------------------------
+
