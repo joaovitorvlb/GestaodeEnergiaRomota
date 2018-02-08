@@ -176,7 +176,7 @@
           <div class="card text-white bg-primary o-hidden h-100">
             <a class="card-footer text-white clearfix small z-1">
               <span class="float-left">CPU</span> <hr>
-              <span class="float-left" id="temp_cpu"></span>
+              <span class="float-left" id="cpu_perc"></span>
             </a>
           </div>
         </div>
@@ -227,7 +227,8 @@
           <i class="fa fa-area-chart"></i> Teste Grafico</div>
         <div class="card-body">
           <div id="battery_meter"></div>
-          <div id="test-grafico" ></div>          
+          <div id="test-grafico" ></div>  
+          <div id="test-upd" ></div>        
 
             <div class="container">
               <div class="row">
@@ -315,64 +316,36 @@
             autoupdate_geral();
         })
 
-    function update_potenciometro()
-    {
-        $.get("/update_potenciometro",{},
-        function(data)
-        {
-            console.log(data);
-        });
-    }
 
-    function update_temperatura()
+    function update()
     {
-        $.get("/update_temperatura",{},
+        $.get("/update",{},
         function(data)
         {
             console.log(data);
-         
-        });
-    }
+            $('#test-upd').text(data);
+            point =gauges1.series[0].points[0];
+            point.update(data[0].toFixed(2) / 1000);
 
-    function update_temp_cpu()
-    {
-        $.get("/t_cpu",{},
-        function(data)
-        {
-            console.log(data);
-            $('#temp_cpu').text(data + ' %');
-        });
-    }
+            point =gauges2.series[0].points[0];
+            point.update(data[1].toFixed(2) / 1000);
 
-    function update_mem_ram()
-    {
-        $.get("/p_mem",{},
-        function(data)
-        {
-            console.log(data);
-            $('#p_mem').text(data + ' %');
-        });
-    }
+            point =gauges3.series[0].points[0];
+            point.update(data[2].toFixed(2) / 1000);
 
-    function update_disc()
-    {
-        $.get("/p_disc",{},
-        function(data)
-        {
-            console.log(data);
-            $('#p_disc').text(data + ' %');
+            $('#cpu_perc').text(data[3].toFixed(2) + ' %');
+            $('#p_mem').text(data[4].toFixed(2) + ' %');
+            $('#p_disc').text(data[5].toFixed(2) + ' %');
+
+            slider.setValue(data[4].toFixed(2));
         });
     }
 
 
     function autoupdate_geral()
     {
-        update_temperatura();
-        update_potenciometro();
-        update_temp_cpu();
-        update_mem_ram();
-        update_disc();
         update_test_grafico();
+        update();
         setTimeout(function(){autoupdate_geral();}, 3000);
     }
 
