@@ -43,6 +43,7 @@ class Mpu6050(object):
         buf[1] = self.i2c.read_byte_data(self.adr, self.reggyro_z_H)
         buf[0] = self.i2c.read_byte_data(self.adr, self.reggyro_z_L)
         value = (buf[1] << 8) + buf[0]
+        return value
 
     def read_accel_x(self):
         buf = bytearray([0, 0]) 
