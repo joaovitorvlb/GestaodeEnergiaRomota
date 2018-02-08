@@ -2,6 +2,7 @@
 
 from flask import Flask, render_template, jsonify, flash, redirect, request, session, abort, url_for
 from flask_sqlalchemy import SQLAlchemy
+from array import array
 import os
 import __future__ 
 import socket
@@ -91,13 +92,15 @@ def logout():
 
 @app.route('/update')
 def update():
-    buf = []
-    fut[0] = read_gyro_x()
-    fut[1] = read_gyro_y()
-    fut[2] = read_gyro_z()
-    return jsonify(buf)
-
-
+    buf = array('f')
+    buf.append(round(mpu.read_gyro_x(), 2))
+    buf.append(round(mpu.read_gyro_y(), 2))
+    buf.append(round(mpu.read_gyro_z(), 2))
+    buf.append(round(psutil.cpu_percent(), 2))
+    buf.append(round(psutil.virtual_memory()[2], 2))
+    buf.append(round(psutil.disk_usage('/')[3], 2))
+    buff = buf.tolist()
+    return jsonify(buff)
 
 @app.route('/graficos/<valor>')
 def graficos(valor):
@@ -109,46 +112,11 @@ def media(valor):
     valores = sqlite_.retorna_dados_media(valor)
     return jsonify(valores)
 
-@app.route('/update_temperatura')
-def temperatura():
-    return ('OK', 200)
-
-@app.route('/update_potenciometro')
-def potenciometro():
-    return ('OK', 200)
-
 @app.route('/sensores1/<vl1>/<vl2>/<vl3>/<vl4>/<vl5>/<vl6>')
 def oi(vl1,vl2,vl3,vl4,vl5,vl6):
     sqlite_.cria_tabela_coleta()
     sqlite_.adiciona_dado_coleta(vl3,vl4,vl5,vl6)
     return ('OK', 200)
-
-@app.route('/t_cpu')
-def t_cpu():
-    i = psutil.cpu_percent()
-    return jsonify(i)
-
-@app.route('/p_mem')
-def p_mem():
-    meminfo = sistema.meminfo()
-    est1 = ('{}'.format(meminfo['MemTotal']))
-    est1 = (est1.strip('kB'))
-    est1 = long(est1)
-    est2 = ('{}'.format(meminfo['MemFree']))
-    est2 = (est2.strip('kB'))
-    est2 = long(est2)
-    uso = ((est2 *100) / est1)
-    return jsonify(uso)
-
-
-@app.route('/p_disc')
-def partirion():
-    disc = sistema.partition()
-    part_t = long(disc[0][2])
-    part_1 = long(disc[1][2])
-    part_2 = long(disc[2][2])
-    part = part_t / (part_1 + part_2)
-    return jsonify(part)
 
 def signal_handler(signal, frame):
     for process in psutil.process_iter():                #varre lista de processo da maquina
