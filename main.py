@@ -15,6 +15,15 @@ import loop
 import signal
 import sys
 import psutil
+import mpu6050
+import smbus
+import pca9685
+
+i2c = smbus.SMBus(2)
+
+pwm = pca9685.Pca9685(i2c=i2c, freq=50)
+
+mpu = mpu6050.Mpu6050(i2c=i2c,adr=0x68)
 
 pot = 0
 bat = 0
@@ -42,6 +51,7 @@ def home():                                      #Função que é chamada para f
         return render_template('login.html')
     else:
         return render_template('index.html')
+        print get_online_users()
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -77,6 +87,16 @@ def logout():
     """Logout Form"""
     session['logged_in'] = False      #se logout for chamado pega a flag e atribui false
     return redirect(url_for('home'))  #Chama nome que vai verificar que a seção foi encerrada
+
+
+@app.route('/update')
+def update():
+    buf = []
+    fut[0] = read_gyro_x()
+    fut[1] = read_gyro_y()
+    fut[2] = read_gyro_z()
+    return jsonify(buf)
+
 
 
 @app.route('/graficos/<valor>')
