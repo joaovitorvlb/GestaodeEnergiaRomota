@@ -93,12 +93,6 @@ var chartingOptions2 = {
         };
 var chart2 = new Highcharts.Chart(chartingOptions2);
 
-
-
-//----------------------------------------------------------------------------------------
-// ---------Fim do grafico de colunas
-//----------------------------------------------------------------------------------------
-
 //----------------------------------------------------------------------------------------
 // ---------Criando o gauge 1
 //----------------------------------------------------------------------------------------
@@ -114,7 +108,7 @@ var gauge1 = {
     },
 
     title: {
-        text: 'Speedometer'
+        text: 'Accel X'
     },
 
     pane: {
@@ -192,7 +186,7 @@ var gauge1 = {
         name: 'Speed',
         data: [80],
         tooltip: {
-            valueSuffix: ' km/h'
+            valueSuffix: ''
         }
     }]
 
@@ -200,14 +194,8 @@ var gauge1 = {
 
 var gauges1 = new Highcharts.Chart(gauge1);
 
-
-
 //----------------------------------------------------------------------------------------
-// ---------Fim do gauge 1
-//----------------------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------------------
-// ---------Criando o gauge 1
+// ---------Criando o gauge 2
 //----------------------------------------------------------------------------------------
 var gauge2 = {
 
@@ -221,7 +209,7 @@ var gauge2 = {
     },
 
     title: {
-        text: 'Speedometer'
+        text: 'Accel Y'
     },
 
     pane: {
@@ -299,7 +287,7 @@ var gauge2 = {
         name: 'Speed',
         data: [80],
         tooltip: {
-            valueSuffix: ' km/h'
+            valueSuffix: ''
         }
     }]
 
@@ -308,7 +296,7 @@ var gauges2 = new Highcharts.Chart(gauge2);
 
 
 //----------------------------------------------------------------------------------------
-// ---------Criando o gauge 1
+// ---------Criando o gauge 3
 //----------------------------------------------------------------------------------------
 var gauge3 = {
 
@@ -322,7 +310,7 @@ var gauge3 = {
     },
 
     title: {
-        text: 'Speedometer'
+        text: 'Accel Z'
     },
 
     pane: {
@@ -400,162 +388,319 @@ var gauge3 = {
         name: 'Speed',
         data: [80],
         tooltip: {
-            valueSuffix: ' km/h'
+            valueSuffix: ''
         }
     }]
 
 };
 var gauges3 = new Highcharts.Chart(gauge3);
 
-
-
-
-
-var gaugeOptions = {
+//----------------------------------------------------------------------------------------
+// ---------Criando o gauge 4
+//----------------------------------------------------------------------------------------
+var gauge4 = {
 
     chart: {
-        type: 'solidgauge'
+        type: 'gauge',
+        renderTo:"container-gauge4",
+        plotBackgroundColor: null,
+        plotBackgroundImage: null,
+        plotBorderWidth: 0,
+        plotShadow: false
     },
 
-    title: null,
+    title: {
+        text: 'Gyro X'
+    },
 
     pane: {
-        center: ['50%', '85%'],
-        size: '140%',
-        startAngle: -90,
-        endAngle: 90,
-        background: {
-            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
-            innerRadius: '60%',
-            outerRadius: '100%',
-            shape: 'arc'
-        }
-    },
-
-    tooltip: {
-        enabled: false
+        startAngle: -150,
+        endAngle: 150,
+        background: [{
+            backgroundColor: {
+                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                stops: [
+                    [0, '#FFF'],
+                    [1, '#333']
+                ]
+            },
+            borderWidth: 0,
+            outerRadius: '109%'
+        }, {
+            backgroundColor: {
+                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                stops: [
+                    [0, '#333'],
+                    [1, '#FFF']
+                ]
+            },
+            borderWidth: 1,
+            outerRadius: '107%'
+        }, {
+            // default background
+        }, {
+            backgroundColor: '#DDD',
+            borderWidth: 0,
+            outerRadius: '105%',
+            innerRadius: '103%'
+        }]
     },
 
     // the value axis
     yAxis: {
-        stops: [
-            [0.1, '#55BF3B'], // green
-            [0.5, '#DDDF0D'], // yellow
-            [0.9, '#DF5353'] // red
-        ],
-        lineWidth: 0,
-        minorTickInterval: null,
-        tickAmount: 2,
-        title: {
-            y: -70
-        },
-        labels: {
-            y: 16
-        }
-    },
-
-    plotOptions: {
-        solidgauge: {
-            dataLabels: {
-                y: 5,
-                borderWidth: 0,
-                useHTML: true
-            }
-        }
-    }
-};
-
-// The speed gauge
-var chartSpeed = Highcharts.chart('container-speed', Highcharts.merge(gaugeOptions, {
-    yAxis: {
         min: 0,
         max: 200,
-        title: {
-            text: 'Speed'
-        }
-    },
 
-    credits: {
-        enabled: false
+        minorTickInterval: 'auto',
+        minorTickWidth: 1,
+        minorTickLength: 10,
+        minorTickPosition: 'inside',
+        minorTickColor: '#666',
+
+        tickPixelInterval: 30,
+        tickWidth: 2,
+        tickPosition: 'inside',
+        tickLength: 10,
+        tickColor: '#666',
+        labels: {
+            step: 2,
+            rotation: 'auto'
+        },
+        title: {
+            text: 'km/h'
+        },
+        plotBands: [{
+            from: 0,
+            to: 120,
+            color: '#55BF3B' // green
+        }, {
+            from: 120,
+            to: 160,
+            color: '#DDDF0D' // yellow
+        }, {
+            from: 160,
+            to: 200,
+            color: '#DF5353' // red
+        }]
     },
 
     series: [{
         name: 'Speed',
         data: [80],
-        dataLabels: {
-            format: '<div style="text-align:center"><span style="font-size:25px;color:' +
-                ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
-                   '<span style="font-size:12px;color:silver">km/h</span></div>'
-        },
         tooltip: {
-            valueSuffix: ' km/h'
+            valueSuffix: ''
         }
     }]
 
-}));
+};
 
-// The RPM gauge
-var chartRpm = Highcharts.chart('container-rpm', Highcharts.merge(gaugeOptions, {
+var gauges4 = new Highcharts.Chart(gauge4);
+
+//----------------------------------------------------------------------------------------
+// ---------Criando o gauge 5
+//----------------------------------------------------------------------------------------
+var gauge5 = {
+
+    chart: {
+        type: 'gauge',
+        renderTo:"container-gauge5",
+        plotBackgroundColor: null,
+        plotBackgroundImage: null,
+        plotBorderWidth: 0,
+        plotShadow: false
+    },
+
+    title: {
+        text: 'Gyro Y'
+    },
+
+    pane: {
+        startAngle: -150,
+        endAngle: 150,
+        background: [{
+            backgroundColor: {
+                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                stops: [
+                    [0, '#FFF'],
+                    [1, '#333']
+                ]
+            },
+            borderWidth: 0,
+            outerRadius: '109%'
+        }, {
+            backgroundColor: {
+                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                stops: [
+                    [0, '#333'],
+                    [1, '#FFF']
+                ]
+            },
+            borderWidth: 1,
+            outerRadius: '107%'
+        }, {
+            // default background
+        }, {
+            backgroundColor: '#DDD',
+            borderWidth: 0,
+            outerRadius: '105%',
+            innerRadius: '103%'
+        }]
+    },
+
+    // the value axis
     yAxis: {
         min: 0,
-        max: 5,
+        max: 200,
+
+        minorTickInterval: 'auto',
+        minorTickWidth: 1,
+        minorTickLength: 10,
+        minorTickPosition: 'inside',
+        minorTickColor: '#666',
+
+        tickPixelInterval: 30,
+        tickWidth: 2,
+        tickPosition: 'inside',
+        tickLength: 10,
+        tickColor: '#666',
+        labels: {
+            step: 2,
+            rotation: 'auto'
+        },
         title: {
-            text: 'RPM'
-        }
+            text: 'km/h'
+        },
+        plotBands: [{
+            from: 0,
+            to: 120,
+            color: '#55BF3B' // green
+        }, {
+            from: 120,
+            to: 160,
+            color: '#DDDF0D' // yellow
+        }, {
+            from: 160,
+            to: 200,
+            color: '#DF5353' // red
+        }]
     },
 
     series: [{
-        name: 'RPM',
-        data: [1],
-        dataLabels: {
-            format: '<div style="text-align:center"><span style="font-size:25px;color:' +
-                ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y:.1f}</span><br/>' +
-                   '<span style="font-size:12px;color:silver">* 1000 / min</span></div>'
-        },
+        name: 'Speed',
+        data: [80],
         tooltip: {
-            valueSuffix: ' revolutions/min'
+            valueSuffix: ''
         }
     }]
 
-}));
+};
+var gauges5 = new Highcharts.Chart(gauge5);
 
-// Bring life to the dials
-setInterval(function () {
-    // Speed
-    var point,
-        newVal,
-        inc;
 
-    if (chartSpeed) {
-        point = chartSpeed.series[0].points[0];
-        inc = Math.round((Math.random() - 0.5) * 100);
-        newVal = point.y + inc;
+//----------------------------------------------------------------------------------------
+// ---------Criando o gauge 6
+//----------------------------------------------------------------------------------------
+var gauge6 = {
 
-        if (newVal < 0 || newVal > 200) {
-            newVal = point.y - inc;
+    chart: {
+        type: 'gauge',
+        renderTo:"container-gauge6",
+        plotBackgroundColor: null,
+        plotBackgroundImage: null,
+        plotBorderWidth: 0,
+        plotShadow: false
+    },
+
+    title: {
+        text: 'Gyro Z'
+    },
+
+    pane: {
+        startAngle: -150,
+        endAngle: 150,
+        background: [{
+            backgroundColor: {
+                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                stops: [
+                    [0, '#FFF'],
+                    [1, '#333']
+                ]
+            },
+            borderWidth: 0,
+            outerRadius: '109%'
+        }, {
+            backgroundColor: {
+                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                stops: [
+                    [0, '#333'],
+                    [1, '#FFF']
+                ]
+            },
+            borderWidth: 1,
+            outerRadius: '107%'
+        }, {
+            // default background
+        }, {
+            backgroundColor: '#DDD',
+            borderWidth: 0,
+            outerRadius: '105%',
+            innerRadius: '103%'
+        }]
+    },
+
+    // the value axis
+    yAxis: {
+        min: 0,
+        max: 200,
+
+        minorTickInterval: 'auto',
+        minorTickWidth: 1,
+        minorTickLength: 10,
+        minorTickPosition: 'inside',
+        minorTickColor: '#666',
+
+        tickPixelInterval: 30,
+        tickWidth: 2,
+        tickPosition: 'inside',
+        tickLength: 10,
+        tickColor: '#666',
+        labels: {
+            step: 2,
+            rotation: 'auto'
+        },
+        title: {
+            text: 'km/h'
+        },
+        plotBands: [{
+            from: 0,
+            to: 120,
+            color: '#55BF3B' // green
+        }, {
+            from: 120,
+            to: 160,
+            color: '#DDDF0D' // yellow
+        }, {
+            from: 160,
+            to: 200,
+            color: '#DF5353' // red
+        }]
+    },
+
+    series: [{
+        name: 'Speed',
+        data: [80],
+        tooltip: {
+            valueSuffix: ''
         }
+    }]
 
-        point.update(newVal);
-    }
-
-    // RPM
-    if (chartRpm) {
-        point = chartRpm.series[0].points[0];
-        inc = Math.random() - 0.5;
-        newVal = point.y + inc;
-
-        if (newVal < 0 || newVal > 5) {
-            newVal = point.y - inc;
-        }
-
-        point.update(newVal);
-    }
-}, 2000);
+};
+var gauges6 = new Highcharts.Chart(gauge6);
 
 
 
 //----------------------------------------------------------------------------------------
-// ---------Fim do gauge 1
+// ---------Inicio dos eventos
 //----------------------------------------------------------------------------------------
 $('#button2').click(function() 
 {
