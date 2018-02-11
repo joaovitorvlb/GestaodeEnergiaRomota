@@ -3,6 +3,7 @@
 
 import ina219 
 import machine
+import logging
 import os
 import main
 import lcd
