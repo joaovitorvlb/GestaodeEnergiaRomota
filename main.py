@@ -24,6 +24,13 @@ i2c = smbus.SMBus(2)
 
 pwm = pca9685.Pca9685(i2c=i2c, freq=50)
 
+pwm0 = 75
+pwm1 = 90
+
+pwm.write_servo(0,pwm0)
+pwm.write_servo(1,pwm1)
+
+
 mpu = mpu6050.Mpu6050(i2c=i2c,adr=0x68)
 
 pot = 0
@@ -99,6 +106,9 @@ def update():
     buf.append(round(psutil.cpu_percent(), 2))
     buf.append(round(psutil.virtual_memory()[2], 2))
     buf.append(round(psutil.disk_usage('/')[3], 2))
+    buf.append(round(mpu.read_accel_x(), 2))
+    buf.append(round(mpu.read_accel_y(), 2))
+    buf.append(round(mpu.read_accel_z(), 2))
     buff = buf.tolist()
     return jsonify(buff)
 
@@ -111,6 +121,32 @@ def graficos(valor):
 def media(valor):
     valores = sqlite_.retorna_dados_media(valor)
     return jsonify(valores)
+
+@app.route('/servo/<valor>')
+def servo(valor):
+    global pwm0
+    global pwm1
+    print valor
+
+    if valor == 'a1':
+        pwm0 = pwm0 + 2
+        pwm.write_servo(0, pwm0)
+
+    if valor == 'a2':
+        pwm0 = pwm0 - 2
+        pwm.write_servo(0, pwm0)
+
+    if valor == 'a3':
+        pwm1 = pwm1 + 2
+        pwm.write_servo(1, pwm1)
+
+    if valor == 'a4':
+        pwm1 = pwm1 - 2
+        pwm.write_servo(1, pwm1)
+
+    
+    return "OK"
+
 
 @app.route('/sensores1/<vl1>/<vl2>/<vl3>/<vl4>/<vl5>/<vl6>')
 def oi(vl1,vl2,vl3,vl4,vl5,vl6):
