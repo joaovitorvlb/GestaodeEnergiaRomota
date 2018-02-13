@@ -100,15 +100,17 @@ def logout():
 @app.route('/update')
 def update():
     buf = array('f')
-    buf.append(round(mpu.read_gyro_x(), 2))
-    buf.append(round(mpu.read_gyro_y(), 2))
-    buf.append(round(mpu.read_gyro_z(), 2))
+    buf.append(mpu.read_gyro_x())
+    buf.append(mpu.read_gyro_y())
+    buf.append(mpu.read_gyro_z())
     buf.append(round(psutil.cpu_percent(), 2))
     buf.append(round(psutil.virtual_memory()[2], 2))
     buf.append(round(psutil.disk_usage('/')[3], 2))
     buf.append(round(mpu.read_accel_x(), 2))
     buf.append(round(mpu.read_accel_y(), 2))
     buf.append(round(mpu.read_accel_z(), 2))
+    buf.append(mpu.get_x_rotation(buf[6], buf[7], buf[8]))
+    buf.append(mpu.get_y_rotation(buf[6], buf[7], buf[8]))
     buff = buf.tolist()
     return jsonify(buff)
 
@@ -126,7 +128,6 @@ def media(valor):
 def servo(valor):
     global pwm0
     global pwm1
-    print valor
 
     if valor == 'a1':
         pwm0 = pwm0 + 2
@@ -144,7 +145,6 @@ def servo(valor):
         pwm1 = pwm1 - 2
         pwm.write_servo(1, pwm1)
 
-    
     return "OK"
 
 
