@@ -389,78 +389,12 @@
   <script type="text/javascript" 
           src="{{ url_for('static', filename='highcharts/solid-gauge.js') }}"></script>
 
+  <script type="text/javascript" 
+          src="{{ url_for('static', filename='js/eventos.js') }}"></script>
+
 
   
-  <script>
-
-  function a1_onclick(id) {
-        $.get( "/servo/" + id, function( data ) {
-            
-        });  
-    }
-
-    $(document).ready(
-        function()
-        {
-            autoupdate_geral();
-            update_grafico();
-        })
-
-
-    function update()
-    {
-        $.get("/update",{},
-        function(data)
-        {
-            console.log(data);
-            point =gauges1.series[0].points[0];
-            point.update(data[0].toFixed(2) / 1000);
-
-            point =gauges2.series[0].points[0];
-            point.update(data[1].toFixed(2) / 1000);
-
-            point =gauges3.series[0].points[0];
-            point.update(data[2].toFixed(2) / 1000);
-
-            $('#cpu_perc').text(data[3].toFixed(2) + ' %');
-            $('#p_mem').text(data[4].toFixed(2) + ' %');
-            $('#p_disc').text(data[5].toFixed(2) + ' %');
-
-            slider.setValue(data[4].toFixed(2));
-
-            point =gauges4.series[0].points[0];
-            point.update(data[6].toFixed(2) / 1000);
-
-            point =gauges5.series[0].points[0];
-            point.update(data[7].toFixed(2) / 1000);
-
-            point =gauges6.series[0].points[0];
-            point.update(data[8].toFixed(2) / 1000);
-
-            vr = parseInt(data[9])
-
-            point =gauges7.series[0].points[0];
-            point.update(vr);
-
-            point =gauges8.series[0].points[0];
-            point.update(data[10].toFixed(2) / 10);
-        });
-    }
-
-
-    function autoupdate_geral()
-    {
-        update();
-        setTimeout(function(){autoupdate_geral();}, 300);
-    }
-
-    function update_grafico()
-    {
-        update_test_grafico();
-        setTimeout(function(){update_grafico();}, 5000);
-    }
-
-</script>
+  
   </div>
 </body>
 </html>
