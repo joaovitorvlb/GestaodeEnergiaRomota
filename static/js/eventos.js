@@ -126,7 +126,7 @@ $(document).ready(
         })
 
 
-var teste = 6; 
+var v_data = new Array();
 
 function update_test_grafico() 
 {
@@ -140,10 +140,16 @@ function update_test_grafico()
             Y2 = parseInt(data[0][2]);        //Garante que os valores sejam inteiros
             Y3 = parseInt(data[0][3]);        //Garante que os valores sejam inteiros
 
-            chart.series[0].addPoint({x: Xt, y: Y1}, false);
-            chart.series[1].addPoint({x: Xt, y: Y2}, false);
-            chart.series[2].addPoint({x: Xt, y: Y3}, false);
-            chart.redraw();
+
+            if(v_data != Xt)
+            {
+                chart.series[0].addPoint({x: Xt, y: Y1}, false);
+                chart.series[1].addPoint({x: Xt, y: Y2}, false);
+                chart.series[2].addPoint({x: Xt, y: Y3}, false);
+                chart.redraw();
+                v_data = Xt;
+            }
+
 
             if(series.data.length > 20)              //Se a quandidade de plotagens for maior que 20
             {
