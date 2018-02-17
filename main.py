@@ -3,6 +3,8 @@
 from flask import Flask, render_template, jsonify, flash, redirect, request, session, abort, url_for
 from flask_sqlalchemy import SQLAlchemy
 from array import array
+from threading import Thread
+import datetime
 import os
 import __future__ 
 import socket
@@ -12,13 +14,16 @@ import netifaces
 import time
 import sqlite_
 import sistema
-import loop
 import signal
 import sys
 import psutil
 import mpu6050
 import smbus
 import pca9685
+
+name = ""
+
+api = "91ZKV99AA1UVMKAE"
 
 i2c = smbus.SMBus(2)
 
@@ -30,12 +35,11 @@ pwm1 = 90
 pwm.write_servo(0,pwm0)
 pwm.write_servo(1,pwm1)
 
-
 mpu = mpu6050.Mpu6050(i2c=i2c,adr=0x68)
 
-pot = 0
-bat = 0
-cont = 0
+pot = []
+bat = []
+flag = 1
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user.db'
@@ -58,17 +62,19 @@ def home():                                      #Função que é chamada para f
     if not session.get('logged_in'):             #verifica se for true inicia seção senao finaliza
         return render_template('login.html')
     else:
-        return render_template('index.html')
+        return render_template('inicio.html', usuario=session['username'])
         print get_online_users()
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    global name
     if request.method == 'GET':                  #Verifica se é requisição GET
         return render_template('login.html')
     else:
         name = request.form['username']
         passw = request.form['password']
+        session['username'] = name
         try:
             data = User.query.filter_by(username=name, password=passw).first()  #verifica n banco de dados se existe usuário
             if data is not None:
@@ -150,9 +156,50 @@ def servo(valor):
 
 @app.route('/sensores1/<vl1>/<vl2>/<vl3>/<vl4>/<vl5>/<vl6>')
 def oi(vl1,vl2,vl3,vl4,vl5,vl6):
+    pot.append(float(vl3))
+    bat.append(float(vl1))
+
     sqlite_.cria_tabela_coleta()
-    sqlite_.adiciona_dado_coleta(vl3,vl4,vl5,vl6)
+    sqlite_.adiciona_dado_coleta(vl3,vl1,vl4,vl6)
+
     return ('OK', 200)
+
+class Loop(Thread):
+    def __init__ (self):
+        Thread.__init__(self)
+
+    def run(self):
+
+        flag = 1
+        global api
+        global bat
+        global pot
+
+        while True:
+            now = datetime.datetime.now()
+            setp = now.replace(minute=14,second=50, microsecond=0) 
+            
+            if now < setp:                           #Indica quando chega um novo dia
+                flag = 1                             #flag para selar atá a proxima condição
+
+            if now > setp:                           #Checa se a data atual ja é a mesma doset point 
+                if flag == 1:                        #flag indica se o dia atual na ja teve media apurada
+                    flag = 0                         #flag para selar atá a proxima condição
+                    if bat and pot:
+
+                        mbat = sum(bat) / len(bat)
+                        mpot = sum(pot) / len(pot)
+
+                        payload = {'api_key': api, 'field3' : str(mpot), 'field4' : str(mbat)}
+                        requests.post("https://api.thingspeak.com/update",params=payload)
+
+                
+                        sqlite_.cria_tabela_media()
+                        sqlite_.adiciona_dado_media(mbat, mpot)
+                        while len(bat) > 0 : bat.pop()  #limpa a lista para novo ciclo
+                        while len(pot) > 0 : pot.pop()  #limpa a lista para novo ciclo
+            time.sleep(1)
+        
 
 def signal_handler(signal, frame):
     for process in psutil.process_iter():                #varre lista de processo da maquina
@@ -165,7 +212,7 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)             #gera calback por KI caso Ctrl+C
 
 if __name__ == "__main__":
-    loop = loop.Loop()
+    loop = Loop()
     loop.start()
     local_ip = sistema.guet_ip()                #invoca funcao para retornar o IP local 
     db.create_all()                             #verifica o modelo de tabela e cria o bd
