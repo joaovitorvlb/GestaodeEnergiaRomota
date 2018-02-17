@@ -1,0 +1,48 @@
+ {% extends "base.html" %}
+{% block content %}
+
+ <div class="card mb-4">
+    <div class="card-header">
+      <i class="fa fa fa-arrows"></i> Contole painel</div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm-5"></div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-1">
+          <button class="fa fa-angle-double-up btn btn-secondary btn-lg" 
+            id="a4" type="button" onclick="return a1_onclick('a4')">
+          </button> 
+        </div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-4"></div>
+      </div> 
+       <div class="row">
+        <div class="col-sm-5"></div>
+        <div class="col-sm-1">
+          <button class="fa fa-angle-double-left btn btn-secondary btn-lg" 
+            id="a1" type="button" onclick="return a1_onclick('a1')">
+          </button> 
+        </div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-1">
+          <button class="fa fa-angle-double-right btn btn-secondary btn-lg"
+            id="a2" type="button" onclick="return a1_onclick('a2')">
+          </button> 
+        </div>
+        <div class="col-sm-4"></div>
+      </div> 
+       <div class="row">
+        <div class="col-sm-5"></div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-1">
+          <button class="fa fa-angle-double-down btn btn-secondary btn-lg" 
+            id="a3" type="button" onclick="return a1_onclick('a3')">        
+          </button> 
+        </div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-4"></div>
+      </div> 
+    </div>
+  </div>
+
+{% endblock %}
