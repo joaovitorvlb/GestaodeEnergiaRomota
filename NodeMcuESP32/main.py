@@ -5,10 +5,12 @@ from machine import SPI
 from machine import I2C
 from machine import ADC
 from machine import DAC 
+from ina219 import INA219
 import socket
 import network
 import time
 import ustruct
+import i2c_lcd
 
 touch0 = TouchPad(Pin(4))
 touch2 = TouchPad(Pin(2))
@@ -27,16 +29,25 @@ spi = SPI(sck=Pin(18), mosi=Pin(23), miso=Pin(19))  #pinos SPI do esp32
 cs1 = Pin(5, Pin.OUT)
 cs2 = Pin(17, Pin.OUT)
 
+cs1.value(1)
+cs2.value(1)
+
+SHUNT_OHMS = 0.1
+
+ina1 = INA219(shunt_ohms=SHUNT_OHMS,address=0x40, i2c=i2c)
+ina1.configure()
+
+lcd = i2c_lcd.Display(i2c=i2c)
+
+lcd.home()
+lcd.write('Hello World')
+
 led1 = Pin(13, Pin.OUT)
 led2 = Pin(12, Pin.OUT)
 led3 = Pin(14, Pin.OUT)
 
 adc1 = ADC(Pin(36))
 adc2 = ADC(Pin(39))
-
-
-cs1.value(1)
-cs2.value(1)
 
 cont = 0
 
@@ -99,27 +110,44 @@ def http_get(url1):                     #Faz requisição http
 dac0.write(128) #output 1.75V voltage
 dac1.write(64)  #output 0.9V voltage
 
-v1 = 0 
-i1 = 0
-p1 = 0
+v1 = []
+i1 = []
+p1 = []
 temp1 = 0
 temp2 = 0
 il = 0
 setcont = 60
 flag =1
 
+lcd.color(0,200,0)
+time.sleep(1)
+lcd.color(0,0,200)
+lcd.clear()
 while True:
+
+	v = "%.2f V" % ina1.voltage()
+	i = "%.2f mA" % ina1.current()
+	p = "%.2f W" % (ina1.power() / 1000)
+
+	lcd.move(0,0)
+	lcd.write(str(v))
+
+	lcd.move(7,0)
+	lcd.write(str(i))
+
+	lcd.move(0,1)
+	lcd.write(str(p))
+
+	time.sleep(1)
 	
 	if cont == 1:
 		led3.value(1)
 		cont = 0
-		va = adc1.read() / 161.0                     #Lê o ad e converte para temperatura
-		ia = adc2.read() / 3.77
 
-		v1 += va
-		i1 += ia
 
-		p1 += (va * ia) / 1000.0
+		v1.append(ina1.voltage())
+		i1.append(ina1.current())
+		p1.append(ina1.power() / 1000)
 		
 		temp1 += temp_th(cs1) - 35
 		temp2 += temp_th(cs2) - 35
@@ -131,9 +159,9 @@ while True:
 	if flag == setcont:
 		flag = 0
 
-		bf1 = str(round((v1 / setcont),2))
-		bf2 = str(round((i1 / setcont),2))
-		bf3 = str(round((p1 / setcont),2))
+		bf1 = "%.2f" % (sum(v1) / len(v1))
+		bf2 = "%.2f" % (sum(i1) / len(i1))
+		bf3 = "%.2f" % (sum(p1) / len(p1))
 		bf4 = str(round((temp1 / setcont),2))
 		bf5 = str(round((temp2 / setcont),2))
 		bf6 = str(round((il / setcont),2))
@@ -147,11 +175,13 @@ while True:
 				led1.value(0)
 			else:
 				led1.value(1)
-		v1 = 0
-		i1 = 0
+
+		while len(v1) > 0 : v1.pop()
+		while len(i1) > 0 : i1.pop()
+		while len(p1) > 0 : p1.pop()
+
 		va = 0
 		i = 0
-		p1 = 0
 		temp1 = 0
 		temp2 = 0
 		il = 0
