@@ -42,21 +42,27 @@
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
-          <a class="nav-link" href="index.html">
+          <a class="nav-link" href="/index">
             <i class="fa fa-fw fa-dashboard"></i>
-            <span class="nav-link-text">Inicio</span>
+            <span class="nav-link-text" >Inicio</span>
           </a>
         </li>
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Charts">
-          <a class="nav-link" href="charts.html">
-            <i class="fa fa-fw fa-area-chart"></i>
-            <span class="nav-link-text">Visualizacoes</span>
+          <a class="nav-link" href="/energia">
+            <i class="fa fa-battery-half"></i>
+            <span class="nav-link-text" >Energia</span>
           </a>
         </li>
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Components">
-          <a class="nav-link" href="tables.html">
+          <a class="nav-link" href="/orientacao">
+            <i class="fa fa-arrows"></i>
+            <span class="nav-link-text" >Orientacao</span>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Components">
+          <a class="nav-link" href="/controle">
             <i class="fa fa-fw fa-wrench"></i>
-            <span class="nav-link-text">Configuracoes</span>
+            <span class="nav-link-text" >Controle</span>
           </a>
         </li>
       </ul>
@@ -136,7 +142,8 @@
         <div class="col-xl-3 col-sm-6 mb-3">
           <div class="card text-white bg-danger o-hidden h-100">
             <a class="card-footer text-white clearfix small z-1">
-              <span class="float-left">Numero de Clientes no Flask</span>
+              <span class="float-left"  >Nível de Bateria</span><hr>
+              <span class="float-left" id="p_bat"></span>
             </a>
           </div>
         </div>
@@ -192,6 +199,7 @@
     <!-- Custom scripts for this page-->
 	<script type="text/javascript" src="{{ url_for('static', filename='js/sb-admin-datatables.min.js') }}"></script>	  
 	<script type="text/javascript" src="{{ url_for('static', filename='js/sb-admin-charts.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/sb-admin-charts-gauge.js') }}"></script>
   <!-- Custom scripts for gauges-->
   <script type="text/javascript" 
           src="{{ url_for('static', filename='js/sb-admin-gauges.js') }}"></script>
