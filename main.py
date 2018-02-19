@@ -20,10 +20,13 @@ import psutil
 import mpu6050
 import smbus
 import pca9685
+import pcduino
+
+ad = pcduino.Adc(3)
 
 name = ""
 
-api = "91ZKV99AA1UVMKAE"
+api = "B245K8ZFSW1YI54O"
 
 i2c = smbus.SMBus(2)
 
@@ -39,6 +42,8 @@ mpu = mpu6050.Mpu6050(i2c=i2c,adr=0x68)
 
 pot = []
 bat = []
+il = []
+tmp = []
 flag = 1
 
 app = Flask(__name__)
@@ -74,10 +79,10 @@ def login():
     else:
         name = request.form['username']
         passw = request.form['password']
-        session['username'] = name
         try:
             data = User.query.filter_by(username=name, password=passw).first()  #verifica n banco de dados se existe usuário
             if data is not None:
+                session['username'] = name
                 session['logged_in'] = True            #Flag da seção se torna true para autenticado geralmente inicia none
                 return redirect(url_for('home'))       #se tiver usuario cadastrado chama home e verifica flag de login
             else:
@@ -102,6 +107,23 @@ def logout():
     session['logged_in'] = False      #se logout for chamado pega a flag e atribui false
     return redirect(url_for('home'))  #Chama nome que vai verificar que a seção foi encerrada
 
+@app.route("/controle")
+def controle():
+    return render_template('controle.html', usuario=session['username'])
+
+@app.route("/energia")
+def energia():
+    return render_template('energia.html', usuario=session['username'])
+
+@app.route("/orientacao")
+def orientacao():
+    return render_template('orientacao.html', usuario=session['username'])
+
+@app.route("/index")
+def index():
+    return redirect(url_for('home'))
+
+
 
 @app.route('/update')
 def update():
@@ -117,6 +139,7 @@ def update():
     buf.append(round(mpu.read_accel_z(), 2))
     buf.append(mpu.get_x_rotation(buf[6], buf[7], buf[8]))
     buf.append(mpu.get_y_rotation(buf[6], buf[7], buf[8]))
+    buf.append(ad.read() / 329.3)
     buff = buf.tolist()
     return jsonify(buff)
 
@@ -157,6 +180,8 @@ def servo(valor):
 @app.route('/sensores1/<vl1>/<vl2>/<vl3>/<vl4>/<vl5>/<vl6>')
 def oi(vl1,vl2,vl3,vl4,vl5,vl6):
     pot.append(float(vl3))
+    tmp.append(float(vl4))
+    il.append(float(vl6))
     bat.append(float(vl1))
 
     sqlite_.cria_tabela_coleta()
@@ -177,20 +202,23 @@ class Loop(Thread):
 
         while True:
             now = datetime.datetime.now()
-            setp = now.replace(minute=14,second=50, microsecond=0) 
+            setp = now.replace(minute=59,second=0, microsecond=0) 
             
             if now < setp:                           #Indica quando chega um novo dia
                 flag = 1                             #flag para selar atá a proxima condição
 
             if now > setp:                           #Checa se a data atual ja é a mesma doset point 
                 if flag == 1:                        #flag indica se o dia atual na ja teve media apurada
-                    flag = 0                         #flag para selar atá a proxima condição
+                    flag = 0  
+                    print "oi"                       #flag para selar atá a proxima condição
                     if bat and pot:
 
                         mbat = sum(bat) / len(bat)
                         mpot = sum(pot) / len(pot)
+                        mtmp = sum(tmp) / len(tmp)
+                        mil = sum(il) / len(il)
 
-                        payload = {'api_key': api, 'field3' : str(mpot), 'field4' : str(mbat)}
+                        payload = {'api_key': api, 'field1' : str(mpot), 'field2' : str(mtmp), 'field3' : str(mil), 'field4' : str(mbat)}
                         requests.post("https://api.thingspeak.com/update",params=payload)
 
                 
@@ -198,6 +226,8 @@ class Loop(Thread):
                         sqlite_.adiciona_dado_media(mbat, mpot)
                         while len(bat) > 0 : bat.pop()  #limpa a lista para novo ciclo
                         while len(pot) > 0 : pot.pop()  #limpa a lista para novo ciclo
+                        while len(tmp) > 0 : tmp.pop()  #limpa a lista para novo ciclo
+                        while len(il) > 0 : il.pop()  #limpa a lista para novo ciclo
             time.sleep(1)
         
 
@@ -216,7 +246,7 @@ if __name__ == "__main__":
     loop.start()
     local_ip = sistema.guet_ip()                #invoca funcao para retornar o IP local 
     db.create_all()                             #verifica o modelo de tabela e cria o bd
-    app.secret_key = "123"                      #inicia a thread
+    app.secret_key = "123"                      
     app.run(host=local_ip)                      #loop dp flask
 
 
